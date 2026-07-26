@@ -1,0 +1,39 @@
+{
+  "name": "RPS_GTok",
+  "version": "0.4.1",
+  "description": "Minimal anonymous release containing only the final GPTok2 tokenizer and final paper evaluation artifacts.",
+  "recommended_mode": "motif_hybrid",
+  "modes": [
+    "original",
+    "compact",
+    "entropy",
+    "motif_macro",
+    "motif_entropy",
+    "motif_hybrid"
+  ],
+  "included_packages": [
+    "gptok2",
+    "gptok2_compact",
+    "gptok2_motif_macro",
+    "gptok2_tokenizer",
+    "gptok2_evaluation"
+  ],
+  "included_reports": [
+    "reports/representative/summary_all.csv",
+    "reports/representative/test_comparison.csv",
+    "reports/representative/dataset_status.csv",
+    "reports/representative/cora_full_graph_summary.csv"
+  ],
+  "entrypoints": {
+    "python_api": "from gptok2_tokenizer import GPTok2Tokenizer",
+    "cli_module": "python -m gptok2_tokenizer.cli",
+    "console_script": "gptok2-tokenizer",
+    "evaluation_cli_module": "python -m gptok2_evaluation.cli",
+    "evaluation_console_script": "gptok2-eval"
+  },
+  "verification": {
+    "pytest": "python -m pytest tests -q",
+    "release_check": "python scripts/verify_release.py",
+    "smoke": "python scripts/reproduce_smoke.py"
+  }
+}

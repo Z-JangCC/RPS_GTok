@@ -1,0 +1,22 @@
+{
+  "name": "RPS_GTok",
+  "purpose": "Minimal reproducible release for the final GPTok2 paper experiments.",
+  "main_package": "gptok2_tokenizer",
+  "auxiliary_packages": [
+    "gptok2",
+    "gptok2_compact",
+    "gptok2_motif_macro",
+    "gptok2_evaluation"
+  ],
+  "included_reference_artifacts": [
+    "reports/representative/summary_all.csv",
+    "reports/representative/test_comparison.csv",
+    "reports/representative/dataset_status.csv",
+    "reports/representative/cora_full_graph_summary.csv"
+  ],
+  "recommended_commands": [
+    "python scripts/reproduce_smoke.py",
+    "python scripts/reproduce_release.py",
+    "python scripts/verify_release.py"
+  ]
+}

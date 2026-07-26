@@ -1,0 +1,9 @@
+dataset,edges,loader,nodes,note,patches,processed_path,run_status,source_dataset,source_size,test_graphs,train_graphs,val_graphs
+CORA,5278,torch_geometric.datasets.Planetoid(Cora) as one full citation graph,2708,Replaced ego-graph sample CORA with whole Cora citation graph high_fidelity final result.,5278,,loaded,,1,1,0,0
+IMDB-BINARY,,TU Dortmund raw parser,,,,,loaded,IMDB-BINARY,,25,50,15
+MUTAG,,TU Dortmund raw parser,,,,,loaded,MUTAG,,37,132,19
+OGBG-MOLHIV,,ogb.graphproppred.PygGraphPropPredDataset(ogbg-molhiv),,,,,loaded,,41127,80,200,50
+PEPTIDES-FUNC,,cached Peptides-func processed PyG data,,,,<repo-local-cache>,loaded,,15535,67,200,33
+PROTEINS,,TU Dortmund raw parser,,,,,loaded,PROTEINS,,120,300,80
+QM9,,cached torch_geometric processed QM9,,,,<repo-local-cache>,loaded,,130831,67,200,33
+ZINC,,cached torch_geometric processed ZINC(subset),,,,<repo-local-cache>,loaded,,12000,80,200,50
