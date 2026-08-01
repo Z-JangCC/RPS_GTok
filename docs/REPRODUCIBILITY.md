@@ -54,6 +54,18 @@ python -m rps_gtok_consumption.cli train \
   --out runs/rps_gtok_consumer
 ```
 
+Run the matched token-view experiment runner:
+
+```bash
+python -m rps_gtok_consumption.cli run-config \
+  --config configs/consumer_multiview_smoke.yaml \
+  --out runs/rps_gtok_multiview
+```
+
+The matched-view runner supports RPS-GTok full, compact, atomic-program,
+shuffled, random-ID, edge-list BPE, adjacency-list BPE, DFS/BFS BPE, and
+frequency-guided walk BPE views under the same training loop.
+
 ## 4. Full release reproduction
 
 ```bash

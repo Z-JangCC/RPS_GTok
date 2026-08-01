@@ -34,6 +34,10 @@
     "consumer_cli_module": "python -m rps_gtok_consumption.cli",
     "consumer_console_script": "gptok2-consumer"
   },
+  "consumer_views": {
+    "rps": ["rps_gtok_full", "rps_gtok_compact", "atomic_program", "rps_gtok_shuffled", "rps_gtok_random_ids"],
+    "serialization_controls": ["edge_list_bpe", "adjacency_list_bpe", "dfs_order_bpe", "bfs_order_bpe", "graph_tokenizer_feuler_bpe"]
+  },
   "verification": {
     "pytest": "python -m pytest tests -q",
     "release_check": "python scripts/verify_release.py",

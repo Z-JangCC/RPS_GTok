@@ -13,6 +13,8 @@ from gptok2.data.io import load_records
 from gptok2.data.synthetic import generate_synthetic_graphs, split_records
 from gptok2_tokenizer import GPTok2Tokenizer
 from rps_gtok_consumption.data import examples_from_records, load_examples, save_examples, split_examples
+from rps_gtok_consumption.experiment import load_config as load_experiment_config
+from rps_gtok_consumption.experiment import run_experiment_config
 from rps_gtok_consumption.training import TrainConfig, train_model
 
 
@@ -40,6 +42,10 @@ def main() -> None:
     smoke.add_argument("--out", default="runs/rps_gtok_consumer_smoke")
     smoke.add_argument("--epochs", type=int, default=2)
 
+    run_config = sub.add_parser("run-config", help="Run a config-driven multi-view downstream experiment.")
+    run_config.add_argument("--config", required=True)
+    run_config.add_argument("--out", default="runs/rps_gtok_consumption_experiment")
+
     args = parser.parse_args()
     if args.cmd == "prepare":
         run_prepare(args)
@@ -47,6 +53,9 @@ def main() -> None:
         run_train(args)
     elif args.cmd == "smoke":
         run_smoke(args)
+    elif args.cmd == "run-config":
+        result = run_experiment_config(load_experiment_config(args.config), args.out)
+        print(json.dumps(result, sort_keys=True))
 
 
 def run_prepare(args: argparse.Namespace) -> None:

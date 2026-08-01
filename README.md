@@ -8,7 +8,7 @@ prepared for reproducible sharing and continued development from this directory.
 
 - `gptok2_tokenizer/`: main tokenizer API and CLI.
 - `rps_gtok_consumption/`: Full-Embed token adapter, shared Transformer
-  backbone, tokenized graph datasets, and train/evaluate CLI.
+  backbone, matched token views, tokenized graph datasets, and train/evaluate CLI.
 - `gptok2_evaluation/`: final representative dataset and Cora full-graph evaluation.
 - `gptok2_compact/`, `gptok2_motif_macro/`, `gptok2/`: supporting code
   required by the final tokenizer.
@@ -58,6 +58,14 @@ python -m rps_gtok_consumption.cli train \
   --out runs/rps_gtok_consumer
 ```
 
+Run a config-driven matched-view experiment:
+
+```bash
+python -m rps_gtok_consumption.cli run-config \
+  --config configs/consumer_multiview_smoke.yaml \
+  --out runs/rps_gtok_multiview
+```
+
 Full reproduction:
 
 ```bash
@@ -82,6 +90,8 @@ python scripts/verify_release.py
 - The repository is designed to run from the project root.
 - The downstream consumer code can be run with supplied GraphRecord JSONL files
   or with prepared tokenized JSONL files; datasets themselves are not vendored.
+- Matched token views include RPS-GTok full/compact/atomic/shuffled/random-ID
+  and reversible serialization controls with train-fitted BPE.
 - The checked-in report files are the canonical release snapshots.
 - First-time full evaluation may download TU Dortmund, PyG, or OGB datasets.
 - The reference environment used Python 3.12, PyTorch 2.5.1+cu124, and CUDA 12.4.

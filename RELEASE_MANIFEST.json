@@ -17,6 +17,7 @@
   ],
   "recommended_commands": [
     "python scripts/reproduce_smoke.py",
+    "python -m rps_gtok_consumption.cli run-config --config configs/consumer_multiview_smoke.yaml --out runs/rps_gtok_multiview",
     "python scripts/reproduce_release.py",
     "python scripts/verify_release.py"
   ]

@@ -11,8 +11,10 @@ sys.path.insert(0, str(ROOT))
 from gptok2.data.synthetic import generate_synthetic_graphs, split_records  # noqa: E402
 from gptok2_tokenizer import GPTok2Tokenizer  # noqa: E402
 from rps_gtok_consumption.data import SequenceVocab, TokenizedGraphDataset, collate_tokenized_graphs, examples_from_records  # noqa: E402
+from rps_gtok_consumption.experiment import load_config, run_experiment_config  # noqa: E402
 from rps_gtok_consumption.model import FullEmbedTokenAdapter, PlainTokenAdapter, build_model  # noqa: E402
 from rps_gtok_consumption.training import TrainConfig, train_model  # noqa: E402
+from rps_gtok_consumption.views import TokenViewBuilder  # noqa: E402
 
 
 def test_full_embed_and_plain_share_backbone_shape() -> None:
@@ -69,3 +71,38 @@ def test_training_loop_runs_one_epoch(tmp_path) -> None:
     assert result["epochs_ran"] == 1
     assert result["test"]["split"] == "test"
     assert (tmp_path / "metrics.json").exists()
+
+
+def test_multiview_builder_covers_final_views() -> None:
+    cfg = {
+        "run": {"seed": 17},
+        "data": {"synthetic": {"num_graphs": 12, "num_nodes_min": 6, "num_nodes_max": 12, "families": ["cycle", "star"]}},
+    }
+    records = generate_synthetic_graphs(cfg, seed=17)
+    tokenizer = GPTok2Tokenizer().fit(records)
+    views = [
+        "rps_gtok_full",
+        "rps_gtok_compact",
+        "atomic_program",
+        "rps_gtok_shuffled",
+        "rps_gtok_random_ids",
+        "edge_list_bpe",
+        "adjacency_list_bpe",
+        "dfs_order_bpe",
+        "bfs_order_bpe",
+        "graph_tokenizer_feuler_bpe",
+    ]
+    builder = TokenViewBuilder(tokenizer, bpe_merges=8, bpe_min_freq=2).fit(records[:8], views)
+    for view in views:
+        tokens = builder.build(records[0], view)
+        assert tokens, view
+
+
+def test_config_driven_multiview_experiment_runs(tmp_path) -> None:
+    root = Path(__file__).resolve().parents[1]
+    config = load_config(root / "configs" / "consumer_multiview_smoke.yaml")
+    config["data"]["synthetic"]["num_graphs"] = 20
+    config["data"]["views"] = ["rps_gtok_full", "edge_list_bpe"]
+    summary = run_experiment_config(config, tmp_path)
+    assert summary["runs"] == 2
+    assert (tmp_path / "candidate_results.csv").exists()
