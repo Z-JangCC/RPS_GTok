@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rps-gtok"
-version = "0.4.0"
-description = "Minimal reproducible RPS_GTok release package for final paper experiments."
+version = "0.5.0"
+description = "Reproducible RPS_GTok tokenizer and Transformer consumer package for final paper experiments."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -22,9 +22,10 @@ dependencies = [
 [project.scripts]
 gptok2-tokenizer = "gptok2_tokenizer.cli:main"
 gptok2-eval = "gptok2_evaluation.cli:main"
+gptok2-consumer = "rps_gtok_consumption.cli:main"
 
 [tool.setuptools]
-packages = {find = {include = ["gptok2", "gptok2.*", "gptok2_compact", "gptok2_compact.*", "gptok2_motif_macro", "gptok2_motif_macro.*", "gptok2_tokenizer", "gptok2_tokenizer.*", "gptok2_evaluation", "gptok2_evaluation.*"]}}
+packages = {find = {include = ["gptok2", "gptok2.*", "gptok2_compact", "gptok2_compact.*", "gptok2_motif_macro", "gptok2_motif_macro.*", "gptok2_tokenizer", "gptok2_tokenizer.*", "gptok2_evaluation", "gptok2_evaluation.*", "rps_gtok_consumption", "rps_gtok_consumption.*"]}}
 
 [project.optional-dependencies]
 full = [

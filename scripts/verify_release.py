@@ -42,7 +42,12 @@ def tracked_release_files(root: Path) -> set[str] | None:
     if not (root / ".git").exists():
         return None
     try:
-        result = subprocess.run(["git", "ls-files", "-z"], cwd=root, check=True, capture_output=True)
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+        )
     except Exception:
         return None
     return {item.decode("utf-8") for item in result.stdout.split(b"\0") if item}
@@ -235,6 +240,7 @@ def main() -> None:
     audit_release_surface(ROOT)
     importlib.import_module("gptok2_tokenizer")
     importlib.import_module("gptok2_evaluation")
+    importlib.import_module("rps_gtok_consumption")
 
     for rel in [
         "reports/representative/summary_all.csv",
@@ -252,7 +258,7 @@ def main() -> None:
     audit_release_surface(ROOT)
     audit_anonymity(ROOT)
     print(f"loaded {len(summary)} rows from representative summary")
-    print("package imports, release artifacts, and anonymity audit look consistent")
+    print("package imports, release artifacts, consumer code, and anonymity audit look consistent")
 
 
 if __name__ == "__main__":

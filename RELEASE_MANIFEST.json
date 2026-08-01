@@ -1,12 +1,13 @@
 {
   "name": "RPS_GTok",
-  "purpose": "Minimal reproducible release for the final GPTok2 paper experiments.",
+  "purpose": "Reproducible release for the final RPS-GTok tokenizer and downstream Transformer paper experiments.",
   "main_package": "gptok2_tokenizer",
   "auxiliary_packages": [
     "gptok2",
     "gptok2_compact",
     "gptok2_motif_macro",
-    "gptok2_evaluation"
+    "gptok2_evaluation",
+    "rps_gtok_consumption"
   ],
   "included_reference_artifacts": [
     "reports/representative/summary_all.csv",

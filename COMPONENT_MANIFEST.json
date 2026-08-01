@@ -1,7 +1,7 @@
 {
   "name": "RPS_GTok",
-  "version": "0.4.1",
-  "description": "Minimal anonymous release containing only the final GPTok2 tokenizer and final paper evaluation artifacts.",
+  "version": "0.5.0",
+  "description": "Anonymous release containing the final RPS-GTok tokenizer, downstream Transformer consumer, and final paper evaluation artifacts.",
   "recommended_mode": "motif_hybrid",
   "modes": [
     "original",
@@ -16,7 +16,8 @@
     "gptok2_compact",
     "gptok2_motif_macro",
     "gptok2_tokenizer",
-    "gptok2_evaluation"
+    "gptok2_evaluation",
+    "rps_gtok_consumption"
   ],
   "included_reports": [
     "reports/representative/summary_all.csv",
@@ -29,7 +30,9 @@
     "cli_module": "python -m gptok2_tokenizer.cli",
     "console_script": "gptok2-tokenizer",
     "evaluation_cli_module": "python -m gptok2_evaluation.cli",
-    "evaluation_console_script": "gptok2-eval"
+    "evaluation_console_script": "gptok2-eval",
+    "consumer_cli_module": "python -m rps_gtok_consumption.cli",
+    "consumer_console_script": "gptok2-consumer"
   },
   "verification": {
     "pytest": "python -m pytest tests -q",

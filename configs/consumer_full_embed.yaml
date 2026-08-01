@@ -1,0 +1,18 @@
+max_len: 256
+vocab_size: 100000
+batch_size: 32
+epochs: 40
+lr: 0.0003
+weight_decay: 0.01
+patience: 8
+seed: 2026
+task_type: classification
+device: auto
+model:
+  adapter: full_embed
+  dim: 128
+  layers: 4
+  heads: 4
+  dropout: 0.1
+  use_feature_gate: true
+  attentive_pooling: false

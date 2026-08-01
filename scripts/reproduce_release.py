@@ -15,6 +15,7 @@ def run(*args: str) -> None:
 
 def main() -> None:
     run("-m", "gptok2_tokenizer.cli", "smoke", "--out", "runs/rps_gtok_smoke")
+    run("-m", "rps_gtok_consumption.cli", "smoke", "--out", "runs/rps_gtok_consumer_smoke", "--epochs", "2")
     run(
         "-m",
         "gptok2_evaluation.cli",
