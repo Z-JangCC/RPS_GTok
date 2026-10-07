@@ -6,6 +6,30 @@ used for the paper. The repository is intended to work as the only development
 directory: no code outside this folder is required, except for datasets that are
 downloaded or supplied separately.
 
+## Rebuttal materials
+
+The repository includes five independent reviewer responses and the complete
+supporting rebuttal package. The response files are available directly at:
+
+- `REBUTTAL_REVIEWER_3HWf.md`
+- `REBUTTAL_REVIEWER_8tZd.md`
+- `REBUTTAL_REVIEWER_HFMW.md`
+- `REBUTTAL_REVIEWER_Rkxp.md`
+- `REBUTTAL_REVIEWER_bYQg.md`
+
+All shared rebuttal materials are organized under `rebuttal/`. In particular,
+the detailed anonymous response is at
+`rebuttal/reviewer_responses/REBUTTAL_FULL_RESPONSE_ANONYMOUS.md`, the
+conference-length response is at
+`rebuttal/reviewer_responses/REBUTTAL_SHORT_2500_CHARS.md`, and the OpenReview
+body-only TeX version is at
+`rebuttal/reviewer_responses/REBUTTAL_SHORT_2500_CHARS_OPENREVIEW.tex`.
+Supplementary experiment scripts are in `scripts/`, while protocols, audits,
+datasets, tables, and authoritative outputs are grouped in
+`rebuttal/{experiments,audits,data_21,data_21_labeled,constructed_tasks,tables}`.
+The directory-level map and reproducibility commands are documented in
+`REBUTTAL_README.md` and `rebuttal/AUTHORITATIVE_RESULTS_INDEX.md`.
+
 ## Contents
 
 - `gptok2_tokenizer/`: final tokenizer API and CLI.
