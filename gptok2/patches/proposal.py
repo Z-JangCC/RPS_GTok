@@ -22,6 +22,8 @@ class PatchProposalConfig:
     learned_port_subtypes: int = 8
     max_port_capacity: int = 8
     grow_rounds: int = 4
+    max_cycle_signatures: int = 512
+    max_triangle_signatures: int = 2048
     sparse_edge_patches: bool = False
     sparse_density_threshold: float = 0.10
     sparse_clustering_threshold: float = 0.08
@@ -43,6 +45,8 @@ class PatchProposalConfig:
             learned_port_subtypes=int(row.get("learned_port_subtypes", 8)),
             max_port_capacity=int(row.get("max_port_capacity", 8)),
             grow_rounds=int(row.get("grow_rounds", 4)),
+            max_cycle_signatures=int(row.get("max_cycle_signatures", 512)),
+            max_triangle_signatures=int(row.get("max_triangle_signatures", 2048)),
             sparse_edge_patches=bool(row.get("sparse_edge_patches", False)),
             sparse_density_threshold=float(row.get("sparse_density_threshold", 0.10)),
             sparse_clustering_threshold=float(row.get("sparse_clustering_threshold", 0.08)),
@@ -56,16 +60,17 @@ class PatchProposalConfig:
 
 def propose_patches(record: GraphRecord, config: PatchProposalConfig | dict) -> list[Patch]:
     cfg = config if isinstance(config, PatchProposalConfig) else PatchProposalConfig.from_config(config)
-    graph = to_networkx(record)
+    graph = _algorithm_graph(record)
     if graph.number_of_nodes() == 0:
         return []
     if cfg.sparse_edge_patches and _should_use_edge_patches(graph, cfg):
         return _edge_cover_patches(record.graph_id, graph, cfg)
-    cycles = _cycle_nodes(graph)
-    triangles = _triangles(graph)
+    cycle_rows = _cycle_nodes(graph)[: cfg.max_cycle_signatures]
+    cycles = [frozenset(cycle) for cycle in cycle_rows]
+    triangles = set(sorted(_triangles(graph), key=lambda x: (len(x), x))[: cfg.max_triangle_signatures])
     bridges = {tuple(sorted(e)) for e in nx.bridges(graph)}
     articulations = set(nx.articulation_points(graph))
-    seeds = _structural_seeds(graph, cfg, cycles, triangles, articulations)
+    seeds = _structural_seeds(graph, cfg, cycle_rows, triangles, articulations)
     candidates: dict[tuple[int, ...], Patch] = {}
     for seed_index, seed in enumerate(seeds):
         nodes = _grow_seed(graph, set(seed), cfg, cycles, triangles, bridges)
@@ -92,8 +97,9 @@ def _should_use_edge_patches(graph: nx.Graph, cfg: PatchProposalConfig) -> bool:
 
 
 def _edge_cover_patches(graph_id: str, graph: nx.Graph, cfg: PatchProposalConfig) -> list[Patch]:
-    cycles = _cycle_nodes(graph)
-    triangles = _triangles(graph)
+    cycle_rows = _cycle_nodes(graph)[: cfg.max_cycle_signatures]
+    cycles = [frozenset(cycle) for cycle in cycle_rows]
+    triangles = set(sorted(_triangles(graph), key=lambda x: (len(x), x))[: cfg.max_triangle_signatures])
     bridges = {tuple(sorted(e)) for e in nx.bridges(graph)}
     articulations = set(nx.articulation_points(graph))
     patches = []
@@ -109,9 +115,10 @@ def _edge_cover_patches(graph_id: str, graph: nx.Graph, cfg: PatchProposalConfig
 
 def make_edge_patches_for_edges(record: GraphRecord, edges, config: PatchProposalConfig | dict, prefix: str = "edge_refine") -> list[Patch]:
     cfg = config if isinstance(config, PatchProposalConfig) else PatchProposalConfig.from_config(config)
-    graph = to_networkx(record)
-    cycles = _cycle_nodes(graph)
-    triangles = _triangles(graph)
+    graph = _algorithm_graph(record)
+    cycle_rows = _cycle_nodes(graph)[: cfg.max_cycle_signatures]
+    cycles = [frozenset(cycle) for cycle in cycle_rows]
+    triangles = set(sorted(_triangles(graph), key=lambda x: (len(x), x))[: cfg.max_triangle_signatures])
     bridges = {tuple(sorted(e)) for e in nx.bridges(graph)}
     articulations = set(nx.articulation_points(graph))
     patches = []
@@ -291,9 +298,20 @@ def _patch_score(graph, nodes: set[int], cfg: PatchProposalConfig, cycles, trian
     outgoing = sum(1 for u in nodes for v in graph.neighbors(u) if v not in nodes)
     possible = max(1, len(nodes) * (len(nodes) - 1) / 2)
     closed_motif = sum(1 for tri in triangles if set(tri) <= nodes)
-    closed_motif += sum(1 for cyc in cycles if set(cyc) <= nodes and len(cyc) <= len(nodes))
+    closed_motif += sum(
+        1
+        for cyc in cycles
+        if (cyc if isinstance(cyc, frozenset) else frozenset(cyc)) <= nodes
+        and len(cyc) <= len(nodes)
+    )
     cut_motif = sum(1 for tri in triangles if set(tri) & nodes and not set(tri) <= nodes)
-    cut_motif += sum(1 for cyc in cycles if set(cyc) & nodes and not set(cyc) <= nodes and len(cyc) <= cfg.max_size + 1)
+    cut_motif += sum(
+        1
+        for cyc in cycles
+        if (cyc if isinstance(cyc, frozenset) else frozenset(cyc)) & nodes
+        and not (cyc if isinstance(cyc, frozenset) else frozenset(cyc)) <= nodes
+        and len(cyc) <= cfg.max_size + 1
+    )
     bridge_boundary_bonus = sum(1 for u in nodes for v in graph.neighbors(u) if v not in nodes and tuple(sorted((u, v))) in bridges)
     return (
         cfg.lambda_in * (internal / possible + internal)
@@ -318,11 +336,12 @@ def _cycle_nodes(graph) -> list[tuple[int, ...]]:
 
 def _triangles(graph) -> set[tuple[int, int, int]]:
     out = set()
-    for clique in nx.enumerate_all_cliques(graph):
-        if len(clique) > 3:
-            break
-        if len(clique) == 3:
-            out.add(tuple(sorted(clique)))
+    nodes = sorted(graph.nodes())
+    adjacency = {u: set(graph.neighbors(u)) for u in nodes}
+    for u in nodes:
+        for v in sorted(x for x in adjacency[u] if x > u):
+            for w in sorted(x for x in adjacency[u] & adjacency[v] if x > v):
+                out.add((u, v, w))
     return out
 
 
@@ -376,4 +395,17 @@ def _features(graph, nodes: set[int], cycles, triangles, bridges) -> dict[str, f
 def patches_for_records(records: list[GraphRecord], config: dict) -> dict[str, list[Patch]]:
     cfg = PatchProposalConfig.from_config(config)
     return {record.graph_id: propose_patches(record, cfg) for record in records}
+
+
+def _algorithm_graph(record: GraphRecord) -> nx.Graph:
+    """Project a schema-aware record to the simple topology used by proposals."""
+    graph = to_networkx(record)
+    if graph.is_directed():
+        graph = graph.to_undirected()
+    if graph.is_multigraph():
+        simple = nx.Graph()
+        simple.add_nodes_from(graph.nodes())
+        simple.add_edges_from((u, v) for u, v, _ in graph.edges(keys=True))
+        graph = simple
+    return graph
 

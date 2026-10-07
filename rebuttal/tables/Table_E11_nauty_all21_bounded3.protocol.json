@@ -1,0 +1,6 @@
+{
+  "exact_backend": "pynauty",
+  "per_graph_timeout_sec": 0.3,
+  "max_graphs": 3,
+  "no_label_or_task_claim": true
+}

@@ -1,0 +1,27 @@
+{
+  "completed": [
+    "ast_cfg_cpg",
+    "cifar10_sp",
+    "citeseer",
+    "collab",
+    "cora",
+    "enzymes",
+    "fb15k_237",
+    "ieee_power_grid",
+    "imdb_binary",
+    "mnist_sp",
+    "mutag",
+    "ogbg_code2",
+    "ogbg_molhiv",
+    "ogbg_molpcba",
+    "ogbn_arxiv",
+    "proteins",
+    "pubmed",
+    "road_networks",
+    "synthetic_stress",
+    "wn18rr"
+  ],
+  "max_graphs": 8,
+  "max_search_nodes": 100,
+  "timeout_sec": 0.5
+}

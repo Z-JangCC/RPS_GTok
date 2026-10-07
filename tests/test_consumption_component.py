@@ -15,6 +15,7 @@ from rps_gtok_consumption.experiment import load_config, run_experiment_config  
 from rps_gtok_consumption.model import FullEmbedTokenAdapter, PlainTokenAdapter, build_model  # noqa: E402
 from rps_gtok_consumption.training import TrainConfig, train_model  # noqa: E402
 from rps_gtok_consumption.views import TokenViewBuilder  # noqa: E402
+from rps_gtok_consumption.views import record_fingerprint  # noqa: E402
 
 
 def test_full_embed_and_plain_share_backbone_shape() -> None:
@@ -91,11 +92,82 @@ def test_multiview_builder_covers_final_views() -> None:
         "dfs_order_bpe",
         "bfs_order_bpe",
         "graph_tokenizer_feuler_bpe",
+        "canonical_edge_list_bpe",
+        "canonical_adjacency_list_bpe",
+        "canonical_dfs_order_bpe",
+        "canonical_bfs_order_bpe",
+        "rps_gtok_plus",
+        "edge_list_plus",
+        "canonical_edge_list_plus",
     ]
     builder = TokenViewBuilder(tokenizer, bpe_merges=8, bpe_min_freq=2).fit(records[:8], views)
     for view in views:
         tokens = builder.build(records[0], view)
         assert tokens, view
+
+
+def test_matched_union_vocabulary_equalizes_plain_parameter_count(tmp_path) -> None:
+    cfg = {"run": {"seed": 19}, "data": {"synthetic": {"num_graphs": 18, "num_nodes_min": 6, "num_nodes_max": 10, "families": ["cycle", "star"]}, "split": {"train_ratio": 0.7, "val_ratio": 0.15}}}
+    records = split_records(generate_synthetic_graphs(cfg, seed=19), cfg)
+    tokenizer = GPTok2Tokenizer().fit(records["train"])
+    builder = TokenViewBuilder(tokenizer)
+    views = ["edge_list_plus", "rps_gtok_plus"]
+    split_views = {
+        view: {
+            split: [
+                *examples_from_records(rows, tokenizer, mode="motif_hybrid", split=split, dataset="matched")
+            ]
+            for split, rows in records.items()
+        }
+        for view in views
+    }
+    # Replace generated tokens through the actual view builder while retaining targets.
+    for view in views:
+        for split, examples in split_views[view].items():
+            for example, record in zip(examples, records[split]):
+                example.tokens = builder.build(record, view)
+    union = [ex.tokens for view in views for ex in split_views[view]["train"]]
+    counts = []
+    for view in views:
+        result = train_model(split_views[view], TrainConfig(max_len=96, batch_size=4, epochs=1, patience=1, model={"adapter": "plain", "dim": 16, "layers": 1, "heads": 4}, device="cpu", vocab_sequences=union), out_dir=tmp_path / view)
+        counts.append(result["parameter_count"])
+    assert counts[0] == counts[1]
+
+
+def test_rps_plus_anchors_are_permutation_stable() -> None:
+    import random
+    import networkx as nx
+    from gptok2.data.schema import graph_to_record
+
+    graph = nx.cycle_graph(8)
+    tokenizer = GPTok2Tokenizer().fit([graph_to_record(graph, "g")])
+    builder = TokenViewBuilder(tokenizer)
+    base = builder.build(graph_to_record(graph, "g"), "rps_gtok_plus")
+    nodes = list(graph.nodes()); random.Random(7).shuffle(nodes)
+    permuted = nx.relabel_nodes(graph, {old: new for new, old in enumerate(nodes)}, copy=True)
+    other = builder.build(graph_to_record(permuted, "g"), "rps_gtok_plus")
+    assert base == other
+
+
+def test_rps_plus_cycle_anchor_is_not_cycle_basis_order_dependent() -> None:
+    import networkx as nx
+    from gptok2.data.schema import graph_to_record
+
+    graph = nx.complete_graph(6)
+    tokenizer = GPTok2Tokenizer().fit([graph_to_record(graph, "cycle-anchor")])
+    builder = TokenViewBuilder(tokenizer)
+    record = graph_to_record(graph, "cycle-anchor")
+    permuted = graph_to_record(nx.relabel_nodes(graph, {0: 5, 1: 4, 2: 3, 3: 2, 4: 1, 5: 0}, copy=True), "cycle-anchor")
+    assert builder.build(record, "rps_gtok_plus") == builder.build(permuted, "rps_gtok_plus")
+
+
+def test_rps_cache_key_includes_graph_content_under_same_graph_id() -> None:
+    import networkx as nx
+    from gptok2.data.schema import graph_to_record
+
+    first = graph_to_record(nx.path_graph(5), "same-id")
+    second = graph_to_record(nx.star_graph(4), "same-id")
+    assert record_fingerprint(first) != record_fingerprint(second)
 
 
 def test_config_driven_multiview_experiment_runs(tmp_path) -> None:

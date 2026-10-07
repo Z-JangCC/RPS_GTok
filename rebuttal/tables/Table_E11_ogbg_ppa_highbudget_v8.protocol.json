@@ -1,0 +1,8 @@
+{
+  "exact_backend": "pynauty",
+  "certificate_encoding": "attributed_incidence_graph_v2",
+  "per_graph_timeout_sec": 300.0,
+  "workers": 4,
+  "max_graphs": 60,
+  "no_label_or_task_claim": true
+}

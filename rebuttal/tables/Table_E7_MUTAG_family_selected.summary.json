@@ -1,0 +1,23 @@
+{
+  "canonical": {
+    "mean_test_balanced_accuracy": 0.8161616161616161,
+    "seeds": 3,
+    "selected_views": [
+      "canonical_edge_list"
+    ]
+  },
+  "raw": {
+    "mean_test_balanced_accuracy": 0.834848484848485,
+    "seeds": 3,
+    "selected_views": [
+      "edge_list"
+    ]
+  },
+  "rps": {
+    "mean_test_balanced_accuracy": 0.8979797979797981,
+    "seeds": 3,
+    "selected_views": [
+      "rps_gtok_plus"
+    ]
+  }
+}

@@ -48,6 +48,7 @@ def main() -> None:
     parser.add_argument("--cora-ego-samples", type=int, default=500)
     parser.add_argument("--cora-ego-radius", type=int, default=1)
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--fast-proposal", action="store_true")
     args = parser.parse_args()
 
     root = ensure_dir(args.out)
@@ -75,7 +76,7 @@ def main() -> None:
             status["val_graphs"] = len(splits["val"])
             status["test_graphs"] = len(splits["test"])
             (out_dir / "dataset_status.json").write_text(json.dumps(status, indent=2), encoding="utf-8")
-            rows = run_dataset(dataset, splits, out_dir)
+            rows = run_dataset(dataset, splits, out_dir, fast_proposal=bool(args.fast_proposal))
             write_csv(summary_path, rows)
             all_rows.extend(rows)
             dataset_status.append(status)
@@ -171,7 +172,7 @@ def _read_int_lines(path: Path) -> list[int]:
 
 def load_dataset_splits(dataset: str, out_dir: Path, args: argparse.Namespace) -> tuple[dict[str, list[GraphRecord]], dict[str, Any]]:
     seed = int(args.seed)
-    if dataset in {"MUTAG", "PROTEINS", "IMDB-BINARY"}:
+    if dataset in {"MUTAG", "PROTEINS", "IMDB-BINARY", "COLLAB"}:
         config = {"run": {"seed": seed}, "data": {"split": {"train_ratio": 0.7, "val_ratio": 0.1}}}
         splits = prepare_real_tu_dataset(config, out_dir, dataset)
         return cap_splits(splits, args, seed), {"loader": "TU Dortmund raw parser", "source_dataset": dataset}
@@ -462,9 +463,28 @@ def cap_list(rows: list[GraphRecord], cap: int, seed: int) -> list[GraphRecord]:
     return rows[: min(len(rows), int(cap))]
 
 
-def fit_component_tokenizer_staged(records: list[GraphRecord], out_dir: Path) -> GPTok2Tokenizer:
+def fit_component_tokenizer_staged(
+    records: list[GraphRecord],
+    out_dir: Path,
+    *,
+    fast_proposal: bool = False,
+) -> GPTok2Tokenizer:
     stage_times: dict[str, float] = {}
-    tokenizer = GPTok2Tokenizer()
+    tokenizer = GPTok2Tokenizer(
+        {
+            "patch": (
+                {
+                    "sparse_edge_patches": True,
+                    "sparse_density_threshold": 1.0,
+                    "sparse_clustering_threshold": 1.0,
+                    "max_patches_per_graph": 384,
+                }
+                if fast_proposal
+                else {}
+            ),
+            "canonicalization": {"max_search_nodes": 100 if fast_proposal else 100000},
+        }
+    )
     t0 = time.time()
     print(f"[fit] patches_for_records: {len(records)} train graphs", flush=True)
     patch_map = patches_for_records(records, tokenizer.config)
@@ -537,14 +557,24 @@ def fit_component_tokenizer_staged(records: list[GraphRecord], out_dir: Path) ->
     return tokenizer
 
 
-def run_dataset(dataset: str, splits: dict[str, list[GraphRecord]], out_dir: Path) -> list[dict[str, Any]]:
+def run_dataset(
+    dataset: str,
+    splits: dict[str, list[GraphRecord]],
+    out_dir: Path,
+    *,
+    fast_proposal: bool = False,
+) -> list[dict[str, Any]]:
     start = time.time()
     tokenizer_path = out_dir / "tokenizer.json"
     if tokenizer_path.exists():
         tokenizer = GPTok2Tokenizer.load(tokenizer_path)
         print(f"[fit] reuse tokenizer: {tokenizer_path}", flush=True)
     else:
-        tokenizer = fit_component_tokenizer_staged(splits["train"], out_dir)
+        tokenizer = fit_component_tokenizer_staged(
+            splits["train"],
+            out_dir,
+            fast_proposal=fast_proposal,
+        )
         tokenizer.save(tokenizer_path)
     rows: list[dict[str, Any]] = [
         {
@@ -699,6 +729,8 @@ def strict_isomorphic(original: GraphRecord, reconstructed: GraphRecord) -> floa
     go = to_networkx(original).to_undirected()
     gr = to_networkx(reconstructed).to_undirected()
     if go.number_of_nodes() != gr.number_of_nodes() or go.number_of_edges() != gr.number_of_edges():
+        return 0.0
+    if go.number_of_nodes() > 128 or go.number_of_edges() > 2048:
         return 0.0
     if sorted(dict(go.degree()).values()) != sorted(dict(gr.degree()).values()):
         return 0.0

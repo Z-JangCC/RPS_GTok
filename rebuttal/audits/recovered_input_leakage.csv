@@ -1,0 +1,14 @@
+dataset,records,multilabel_records,forbidden_target_fields,status
+cifar10_sp,60,0,0,pass
+enzymes,60,0,0,pass
+ieee_power_grid,3,0,0,pass
+imdb_binary,60,0,0,pass
+mnist_sp,60,0,0,pass
+mutag,60,0,0,pass
+ogbg_molhiv,60,0,0,pass
+ogbg_molpcba,60,60,0,pass
+ogbg_ppa,8,0,0,pass
+proteins,57,0,0,pass
+test,20,0,0,pass
+train,60,0,0,pass
+val,20,0,0,pass

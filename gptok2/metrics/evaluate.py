@@ -10,6 +10,8 @@ import networkx as nx
 import torch
 
 from gptok2.data.schema import GraphRecord, edge_set, to_networkx
+from gptok2.canonical import canonicalize
+from gptok2.data.schema_spec import SchemaSpec
 from gptok2.program.actions import GraphProgram
 from gptok2.program.interpreter import InterpreterState
 from gptok2.vq.codebook import PrototypeVQCodebook
@@ -36,13 +38,21 @@ def structure_fidelity(original: GraphRecord, reconstructed: GraphRecord) -> dic
     if raw_f1 > f1:
         precision, recall, f1 = raw_precision, raw_recall, raw_f1
         tp, fp, fn = raw_tp, raw_fp, raw_fn
-    exact = float(_isomorphic(go, gr))
+    strict_exact, strict_skipped = _strict_isomorphic(go, gr)
+    wl_match = float(_isomorphic(go, gr))
     tri_o = sum(nx.triangles(go).values()) // 3
     tri_r = sum(nx.triangles(gr).values()) // 3
     cyc_o = _cycle_count(go)
     cyc_r = _cycle_count(gr)
     return {
-        "exact_reconstruction": exact,
+        "exact_reconstruction": strict_exact,
+        "strict_topology_exact": strict_exact,
+        "strict_topology_audit_skipped": float(strict_skipped),
+        "wl_hash_match": wl_match,
+        "node_type_exact": _node_type_exact(original, reconstructed),
+        "node_attr_exact": _tensor_exact(original.node_attr, reconstructed.node_attr),
+        "edge_type_exact": _tensor_exact(original.edge_type, reconstructed.edge_type),
+        "edge_attr_exact": _tensor_exact(original.edge_attr, reconstructed.edge_attr),
         "edge_precision": precision,
         "edge_recall": recall,
         "edge_f1": f1,
@@ -203,6 +213,44 @@ def aggregate(rows: list[dict[str, float]], prefix: str = "") -> dict[str, float
     return {prefix + k: float(mean(float(r.get(k, 0.0)) for r in rows)) for k in keys}
 
 
+def _strict_isomorphic(a: nx.Graph, b: nx.Graph) -> tuple[float, bool]:
+    if a.number_of_nodes() != b.number_of_nodes() or a.number_of_edges() != b.number_of_edges():
+        return 0.0, False
+    if a.number_of_nodes() > 64 or a.number_of_edges() > 1024:
+        return 0.0, True
+    try:
+        ar = _record_from_simple_graph(a)
+        br = _record_from_simple_graph(b)
+        spec = SchemaSpec(name="strict_topology", retain_node_type=False, retain_node_attr=False, max_search_nodes=5000)
+        ac = canonicalize(ar, spec, exact=True, max_search_nodes=5000)
+        bc = canonicalize(br, spec, exact=True, max_search_nodes=5000)
+        if not ac.exact_completed or not bc.exact_completed:
+            return 0.0, True
+        return float(ac.canonical_key == bc.canonical_key), False
+    except (nx.NetworkXException, RuntimeError, MemoryError):
+        return 0.0, False
+
+
+def _record_from_simple_graph(graph: nx.Graph) -> GraphRecord:
+    import torch
+
+    simple = _as_undirected(graph)
+    nodes = sorted(simple.nodes())
+    mapping = {node: idx for idx, node in enumerate(nodes)}
+    edges = [(mapping[u], mapping[v]) for u, v in simple.edges()]
+    edge_index = (
+        torch.tensor(edges, dtype=torch.long).t().contiguous()
+        if edges
+        else torch.empty(2, 0, dtype=torch.long)
+    )
+    return GraphRecord(
+        graph_id="strict_audit",
+        num_nodes=len(nodes),
+        edge_index=edge_index,
+        directed=False,
+    )
+
+
 def _isomorphic(a: nx.Graph, b: nx.Graph) -> bool:
     if a.number_of_nodes() != b.number_of_nodes() or a.number_of_edges() != b.number_of_edges():
         return False
@@ -211,8 +259,35 @@ def _isomorphic(a: nx.Graph, b: nx.Graph) -> bool:
     return nx.weisfeiler_lehman_graph_hash(a) == nx.weisfeiler_lehman_graph_hash(b)
 
 
+def _tensor_exact(a: torch.Tensor | None, b: torch.Tensor | None) -> float:
+    if a is None and b is None:
+        return 1.0
+    if a is None or b is None or tuple(a.shape) != tuple(b.shape):
+        return 0.0
+    return float(torch.equal(a.detach().cpu(), b.detach().cpu()))
+
+
+def _node_type_exact(original: GraphRecord, reconstructed: GraphRecord) -> float:
+    if original.node_type is None and reconstructed.node_type is None:
+        return 1.0
+    if original.node_type is None or reconstructed.node_type is None:
+        return 0.0
+    if original.node_type.numel() != reconstructed.node_type.numel():
+        return 0.0
+    return float(
+        sorted(original.node_type.detach().cpu().tolist())
+        == sorted(reconstructed.node_type.detach().cpu().tolist())
+    )
+
+
 def _as_undirected(graph: nx.Graph) -> nx.Graph:
-    return graph.to_undirected() if graph.is_directed() else graph
+    simple = graph.to_undirected() if graph.is_directed() else graph
+    if simple.is_multigraph():
+        projected = nx.Graph()
+        projected.add_nodes_from(simple.nodes(data=True))
+        projected.add_edges_from((u, v) for u, v, _ in simple.edges(keys=True))
+        return projected
+    return simple
 
 
 def _aligned_reconstructed_edges(original: nx.Graph, reconstructed: nx.Graph) -> set[tuple[int, int]]:
@@ -242,7 +317,7 @@ def _safe_isomorphism_mapping(original: nx.Graph, reconstructed: nx.Graph) -> di
             return _forest_isomorphism_mapping(original, reconstructed)
         except (nx.NetworkXException, RuntimeError, StopIteration):
             return None
-    if original.number_of_nodes() <= 256 and original.number_of_edges() <= 4096:
+    if original.number_of_nodes() <= 32 and original.number_of_edges() <= 512:
         try:
             mapping = nx.vf2pp_isomorphism(original, reconstructed)
         except (nx.NetworkXException, RuntimeError, MemoryError):
@@ -287,9 +362,10 @@ def _component_signature(graph: nx.Graph) -> tuple:
 
 
 def _canonical_node_order(graph: nx.Graph) -> list[int]:
-    triangles = nx.triangles(graph) if not graph.is_directed() else nx.triangles(graph.to_undirected())
-    clustering = nx.clustering(graph.to_undirected() if graph.is_directed() else graph)
-    core = nx.core_number(graph.to_undirected() if graph.is_directed() else graph) if graph.number_of_nodes() else {}
+    graph = _as_undirected(graph)
+    triangles = nx.triangles(graph)
+    clustering = nx.clustering(graph)
+    core = nx.core_number(graph) if graph.number_of_nodes() else {}
     return sorted(
         graph.nodes(),
         key=lambda n: (

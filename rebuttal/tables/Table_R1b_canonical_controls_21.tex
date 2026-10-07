@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{21-dataset canonicalization control audit on sampled materialized records.}
+\begin{tabular}{lrrr}
+\toprule
+View & Datasets & Mean permutation stability & Mean tokens \\
+\midrule
+adjacency_list & 21 & 0.024 & 62.8 \\
+bfs_order & 21 & 0.000 & 160.2 \\
+canonical_adjacency_list & 21 & 0.725 & 62.8 \\
+canonical_bfs_order & 21 & 0.778 & 160.2 \\
+canonical_dfs_order & 21 & 0.725 & 160.2 \\
+canonical_edge_list & 21 & 0.725 & 246.0 \\
+dfs_order & 21 & 0.000 & 160.2 \\
+edge_list & 21 & 0.024 & 246.0 \\
+rps_gtok_identifier & 21 & 0.955 & 49.9 \\
+\bottomrule
+\end{tabular}
+\end{table}

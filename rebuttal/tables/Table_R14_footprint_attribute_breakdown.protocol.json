@@ -1,0 +1,7 @@
+{
+  "graphs": 24,
+  "seed": 2026,
+  "encoding": "unsigned-varint IDs and length-prefixed UTF-8 fields",
+  "attributes": "raw",
+  "codebook_amortized": true
+}

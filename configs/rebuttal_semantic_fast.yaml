@@ -1,0 +1,16 @@
+max_len: 256
+vocab_size: 100000
+batch_size: 8
+epochs: 3
+lr: 0.0003
+weight_decay: 0.01
+patience: 2
+seed: 2026
+task_type: classification
+device: cpu
+model:
+  adapter: plain
+  dim: 48
+  layers: 1
+  heads: 4
+  dropout: 0.1

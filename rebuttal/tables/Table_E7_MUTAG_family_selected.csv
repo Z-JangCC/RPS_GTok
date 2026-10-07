@@ -1,0 +1,10 @@
+candidate,candidate_name,dataset,family,parameters,prediction_unique,seed,selection,test_accuracy,test_balanced_accuracy,test_macro_f1,val_balanced_accuracy,val_macro_f1,view
+3,medium_deep,MUTAG,canonical,125810,2,2026,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8108108108108109,0.8303030303030303,0.8102564102564103,0.7285714285714285,0.7285714285714285,canonical_edge_list
+0,small,MUTAG,canonical,56834,2,2027,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8648648648648649,0.8651515151515152,0.8612153038259565,0.7642857142857142,0.7816091954022988,canonical_edge_list
+0,small,MUTAG,canonical,56834,2,2028,validation_balanced_accuracy_then_macro_f1_then_parameters,0.7567567567567568,0.7530303030303029,0.7501875468867216,0.7642857142857142,0.7816091954022988,canonical_edge_list
+2,medium,MUTAG,raw,97538,2,2026,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8918918918918919,0.8878787878787879,0.8878787878787879,0.7642857142857142,0.7816091954022988,edge_list
+2,medium,MUTAG,raw,97538,2,2027,validation_balanced_accuracy_then_macro_f1_then_parameters,0.7567567567567568,0.7636363636363637,0.753880266075388,0.7642857142857142,0.7816091954022988,edge_list
+0,small,MUTAG,raw,56834,2,2028,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8378378378378378,0.853030303030303,0.8367647058823529,0.7285714285714285,0.7285714285714285,edge_list
+0,small,MUTAG,rps,56834,2,2026,validation_balanced_accuracy_then_macro_f1_then_parameters,0.918918918918919,0.9318181818181819,0.917960088691796,0.8,0.8416666666666667,rps_gtok_plus
+1,small_fast,MUTAG,rps,56834,2,2027,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8918918918918919,0.9090909090909092,0.8911764705882352,0.8642857142857143,0.8642857142857143,rps_gtok_plus
+3,medium_deep,MUTAG,rps,125810,2,2028,validation_balanced_accuracy_then_macro_f1_then_parameters,0.8378378378378378,0.853030303030303,0.8367647058823529,0.8642857142857143,0.8642857142857143,rps_gtok_plus

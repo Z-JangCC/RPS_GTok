@@ -1,0 +1,8 @@
+{"graph_id": "program_ast_build_kdd_submission_bundle.py_4", "regime_label": 1, "split": "train", "target": 1.5075436047527626, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_download_real_datasets.py_9", "regime_label": 0, "split": "val", "target": 1.5075436047527606, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_export_kdd_tables.py_11", "regime_label": 0, "split": "train", "target": 1.507543604752761, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_run_kdd_goal_audit.py_25", "regime_label": 1, "split": "train", "target": 1.5075436047527624, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_run_kdd_readiness_audit.py_26", "regime_label": 1, "split": "train", "target": 1.507543604752763, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_run_objective_audit.py_28", "regime_label": 0, "split": "train", "target": 1.5075436047527586, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast___init__.py_43", "regime_label": 0, "split": "train", "target": 1.4056373239630213, "target_source": "log1p_effective_resistance"}
+{"graph_id": "program_ast_fallback.py_56", "regime_label": 0, "split": "test", "target": 1.4723286984616917, "target_source": "log1p_effective_resistance"}

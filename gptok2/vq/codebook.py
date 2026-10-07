@@ -88,10 +88,12 @@ class PrototypeVQCodebook:
         distance_weights: dict[str, float] | None = None,
         interfaces: list[InterfaceSchema] | None = None,
         factorized_interfaces: bool = False,
+        frozen: bool = False,
     ):
         self.codes = sorted(codes, key=lambda c: c.code_id)
         self.interfaces = sorted(interfaces or [], key=lambda s: s.interface_id)
         self.factorized_interfaces = bool(factorized_interfaces)
+        self.frozen = bool(frozen)
         self.distance_weights = distance_weights or {
             "num_nodes": 1.2,
             "num_edges": 1.2,
@@ -119,6 +121,8 @@ class PrototypeVQCodebook:
         schema = self._interface_by_key.get(key)
         if schema is not None:
             return schema.interface_id
+        if self.frozen:
+            return -1
         schema = InterfaceSchema(
             len(self.interfaces),
             tuple(p.prototype_schema() for p in patch.ports),
@@ -129,6 +133,9 @@ class PrototypeVQCodebook:
         self.interfaces.append(schema)
         self._interface_by_key[key] = schema
         return schema.interface_id
+
+    def freeze(self) -> None:
+        self.frozen = True
 
     def get_interface(self, interface_id: int) -> InterfaceSchema:
         idx = int(interface_id)
@@ -233,6 +240,7 @@ class PrototypeVQCodebook:
             "codes": [c.to_dict() for c in self.codes],
             "interfaces": [s.to_dict() for s in self.interfaces],
             "factorized_interfaces": self.factorized_interfaces,
+            "frozen": self.frozen,
             "distance_weights": self.distance_weights,
         }
 
@@ -243,6 +251,7 @@ class PrototypeVQCodebook:
             row.get("distance_weights"),
             [InterfaceSchema.from_dict(x) for x in row.get("interfaces", [])],
             bool(row.get("factorized_interfaces", False)),
+            bool(row.get("frozen", False)),
         )
 
 

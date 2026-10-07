@@ -1,0 +1,2 @@
+dataset,graphs,ok,equal,timeout,error,directed,directed_input,certified_equal_rate,wall_sec,timeout_sec,workers,certificate
+ogbg_ppa,8,5,5,3,0,0,0,1.0,354.16432302072644,300.0,4,pynauty_attributed_incidence_graph_v2

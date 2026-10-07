@@ -1,0 +1,7 @@
+setting,bytes_per_graph,note
+Raw edge / canonical edge topology bytes,27.417,same packed varint protocol
+RPS-GTok topology-only identifier + amortized codebook,16.208,model-facing compact context
+RPS-GTok topology-only complete stream,346.500,includes executable local arguments
+RPS-GTok with attributes: topology component,334.417,identifier/codebook + token payload + topology schema
+RPS-GTok with attributes: attribute component,467.958,raw node/edge attribute payload
+RPS-GTok with attributes: full complete stream,802.375,topology + attributes

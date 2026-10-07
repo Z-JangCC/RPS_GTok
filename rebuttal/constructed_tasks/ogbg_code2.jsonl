@@ -1,0 +1,8 @@
+{"graph_id": "ogbg-code2_0", "regime_label": 1, "split": "val", "target": 1.754619922278603, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_1", "regime_label": 1, "split": "test", "target": 1.8742031384391333, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_2", "regime_label": 1, "split": "train", "target": 1.7680429426107414, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_3", "regime_label": 1, "split": "train", "target": 1.6492594066207729, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_4", "regime_label": 1, "split": "train", "target": 1.7995416096701096, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_5", "regime_label": 0, "split": "train", "target": 1.587320107180482, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_6", "regime_label": 0, "split": "train", "target": 1.5314763709643875, "target_source": "log1p_effective_resistance"}
+{"graph_id": "ogbg-code2_7", "regime_label": 0, "split": "train", "target": 1.4971087274601798, "target_source": "log1p_effective_resistance"}

@@ -23,6 +23,7 @@ def main() -> None:
     rep.add_argument("--cora-ego-samples", type=int, default=500)
     rep.add_argument("--cora-ego-radius", type=int, default=1)
     rep.add_argument("--overwrite", action="store_true")
+    rep.add_argument("--fast-proposal", action="store_true")
 
     cora = sub.add_parser("cora-full", help="Run GPTok2 on the whole Cora citation graph.")
     cora.add_argument("--out", default="runs/rps_gtok_cora_full_graph_eval")
@@ -69,6 +70,8 @@ def _argv_for_representative(args: argparse.Namespace) -> list[str]:
     ]
     if args.overwrite:
         argv.append("--overwrite")
+    if args.fast_proposal:
+        argv.append("--fast-proposal")
     return argv
 
 

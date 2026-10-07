@@ -1,0 +1,22 @@
+dataset,node_attr_keys,contains_label_field,semantic_authorized,policy
+ast_cfg_cpg,"[""lineno""]",0,1,task_source_required
+cifar10_sp,"[""x_dim""]",0,1,task_source_required
+citeseer,"[""label"", ""x_dim""]",1,0,structural_only
+collab,[],0,1,task_source_required
+cora,"[""label"", ""x_dim""]",1,0,structural_only
+enzymes,"[""x_dim""]",0,1,task_source_required
+fb15k_237,[],0,1,task_source_required
+ieee_power_grid,"[""p_mw"", ""q_mvar"", ""vm_pu"", ""vn_kv""]",0,1,task_source_required
+imdb_binary,[],0,1,task_source_required
+mnist_sp,"[""x_dim""]",0,1,task_source_required
+mutag,"[""x_dim""]",0,1,task_source_required
+ogbg_code2,"[""x_dim""]",0,1,task_source_required
+ogbg_molhiv,"[""x_dim""]",0,1,task_source_required
+ogbg_molpcba,"[""x_dim""]",0,1,task_source_required
+ogbg_ppa,[],0,1,task_source_required
+ogbn_arxiv,"[""label"", ""x_dim""]",1,0,structural_only
+proteins,"[""x_dim""]",0,1,task_source_required
+pubmed,"[""label"", ""x_dim""]",1,0,structural_only
+road_networks,"[""degree""]",0,1,task_source_required
+synthetic_stress,"[""bipartite"", ""block""]",0,1,task_source_required
+wn18rr,[],0,1,task_source_required

@@ -1,0 +1,217 @@
+Official Review of Submission1814 by Reviewer 3HWf
+Official Reviewby Reviewer 3HWf17 Sept 2026, 04:36 (modified: 27 Sept 2026, 22:55)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Reviewer 3HWf, AuthorsRevisions
+Paper Summary:
+This paper proposes RPS-GTok, a graph tokenizer designed for reconstructability and permutation stability. The method combines graph canonical relabeling, primitive graph-editing operations, and merging of recurring primitive fragments. It evaluates tokenization across 21 graph datasets and compares with multiple kinds of baselines.
+
+Paper Strengths:
+The paper targets a meaningful and well-defined problem on graph tokenization.
+
+The overall design is coherent in a high level. Canonicalization removes dependence on arbitrary node IDs, primitive operations provide an explicit reconstruction path, and vocabulary-based fragments provide compression. The relationship between these components is clear.
+
+The experimental coverage is broad, spanning 21 datasets and multiple tokenizers.
+
+Paper Weaknesses:
+My concerns are mostly on the rigorousness of experiment settings.
+
+The downstream evaluation is restricted to topology surrogate tasks, like density bins and triangle existence. Given multiple datasets contain their domain-specific tasks (e.g., node classification, link prediction), it is important to evaluate the proposed method on those tasks as well to demonstrate the end-to-end capabilities and advantages of the method.
+
+The baseline methods were truncated to a 512-token budget. Some of the downstream advantage may come from sequence truncation rather than better representations. Similarly, RPS-GTok (Full-Embed) is not directly comparable to the token-only baselines, as it supplies the model with additional features.
+
+Runtime/scaling results are absent, which are important metrics especially on canonical relabeling.
+
+Plus, the author should spend more effort demonstrating the novelty of their work, compared with a combination of existing techniques. A deeper motivation (or illustrating example) might help.
+
+Resubmission:
+NA
+
+Questions And Suggestions For Rebuttal:
+What happens if the same canonical relabeling step is applied to edge-list, adjacency-list, DFS/BFS, and BPE baselines? Can they reach near perfect stability as well?
+
+Relevance: 4: High - The work is relevant to the Research track of KDD and is of broad interest to the community
+Novelty: 3: Moderate - The paper introduces a new and interesting idea or approach that adds value to the field. The contribution is original and represents an advancement of existing knowledge, demonstrating solid innovation and creativity.
+Technical Quality: 2: Low - The paper has several technical weaknesses, such as minor methodological flaws, insufficient analysis, or unsupported conclusions. While the work shows some level of competence, it lacks thoroughness and precision. Improvements are necessary for it to be considered robust.
+Presentation: 2: Low - The paper has noticeable issues with clarity and coherence. The writing may contain several grammatical and typographical errors. Figures and tables are present but may not be well-integrated or effectively used. The presentation allows for understanding but requires effort from the reader.
+Reproducibility: 2: Low - The paper includes some information about the methods, data, and procedures, but key details are missing. There may be supplementary materials, but they are incomplete or unclear. Reproducing the results would require significant effort and additional information.
+Reviewer Confidence: 3: Moderate - The reviewer has a good understanding of the subject area and is familiar with the research methods and context of the paper. They feel confident in their ability to accurately assess the quality and significance of the work. Their evaluation is based on a solid grasp of the content and context.
+Ethics Review Flag: No
+Ethics Review Description: NA
+Add:
+Official Review of Submission1814 by Reviewer 8tZd
+Official Reviewby Reviewer 8tZd14 Sept 2026, 08:34 (modified: 27 Sept 2026, 22:55)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Reviewer 8tZd, AuthorsRevisions
+Paper Summary:
+This paper proposes RPS-GTok, a graph tokenizer aiming to generate reconstructable and permutation-stable graph tokens. The authors introduce reconstruction objectives and structural constraints to improve graph token quality, and evaluate the proposed method on several graph learning benchmarks. The topic is relevant to graph representation learning and graph foundation models.
+
+Paper Strengths:
+The paper studies graph tokenization, an emerging and meaningful problem for graph foundation models.
+
+The overall pipeline is well organized, and the proposed components are described clearly.
+
+The authors conduct evaluations on multiple datasets with ablation studies.
+
+Paper Weaknesses:
+The main ideas, including reconstruction-based representation learning and permutation invariance, are closely related to existing graph representation methods.
+
+The paper lacks theoretical or empirical evidence explaining why reconstructability leads to better graph tokens and improved downstream performance.
+
+The improvements over baselines are not sufficiently convincing. It remains unclear whether the gains come from the proposed tokenizer or increased model complexity/training objectives.
+
+Resubmission:
+N/A
+
+Questions And Suggestions For Rebuttal:
+What is the key technical novelty compared with existing graph tokenization and graph representation learning methods?
+
+Can the authors provide analysis or experiments showing that reconstruction capability is directly related to better downstream performance?
+
+Are the improvements mainly caused by additional parameters or training objectives? Please provide parameter and complexity comparisons.
+
+How does the method compare with recent graph foundation models under fair experimental settings?
+
+Relevance: 4: High - The work is relevant to the Research track of KDD and is of broad interest to the community
+Novelty: 2: Low - The ideas are relatively minor and largely incremental. The work builds heavily on existing research.
+Technical Quality: 2: Low - The paper has several technical weaknesses, such as minor methodological flaws, insufficient analysis, or unsupported conclusions. While the work shows some level of competence, it lacks thoroughness and precision. Improvements are necessary for it to be considered robust.
+Presentation: 3: Moderate - The paper is organized and generally clear. The writing is mostly free of grammatical and typographical errors, making it easy to read. Figures and tables are effectively used to support the text. The presentation facilitates understanding and conveys the key points effectively.
+Reproducibility: 3: Moderate - The paper provides a clear and detailed description of the methods, data, and procedures used. Supplementary materials, such as datasets and code, are available and sufficiently documented. Reproducing the results would be feasible with the provided information, though some effort may still be required.
+Reviewer Confidence: 4: High - The reviewer is an expert in the subject area and has extensive knowledge of the research methods and context of the paper. They are highly confident in their ability to provide an accurate and thorough assessment. Their evaluation is based on deep expertise and a comprehensive understanding of the work.
+Ethics Review Flag: No
+Ethics Review Description: N/A
+Add:
+Official Review of Submission1814 by Reviewer bYQg
+Official Reviewby Reviewer bYQg13 Sept 2026, 23:22 (modified: 27 Sept 2026, 22:55)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Reviewer bYQg, AuthorsRevisions
+Paper Summary:
+This paper proposes RPS-GTok, a tokenizer that encodes graphs into discrete token sequences, aiming to satisfy both reconstructability (tokens expand back into a graph equivalent to the source under a prescribed schema) and permutation stability (relabeling nodes leaves the emitted sequence unchanged). The method is a four-stage pipeline: attributed canonical relabeling removes dependence on input node identifiers; the canonical graph is compiled into an ordered program of graph-editing primitives; order-preserving subsequences of that program, induced on candidate node sets constrained by size and boundary ports, are matched against an offline frozen vocabulary and retained greedily; tokens carrying an identifier and a local payload are emitted, with the identifier consumed by the Transformer and vocabulary-uncovered content falling back to primitive entries. Experiments cover token cost on 21 datasets, a comparison against nine direct graph representations on 2,602 sampled graphs, and classification and regression on four datasets with topology-derived targets.
+
+Paper Strengths:
+Defining a token as an executable primitive fragment rather than a latent code or a text substring is the core concept separating this work from every compared method. Each token carries an expansion map, primitives carry local preconditions, and invalid programs are rejected as a whole, so a token's meaning can be checked by execution.
+The fallback design ensures that no graph admitted by the schema is unencodable. Edge-level and isolated-node candidates remain admissible and uncovered content is emitted as primitives, so limited vocabulary coverage lengthens the sequence instead of dropping graph content.
+The graph schema uniformly handles cases most graph serialization work sidesteps, including multiedges, self-loops, isolated nodes, directed edges, and node and edge attributes.
+The related-work section organizes existing methods into four classes by the graph-to-token pathway with a consistent criterion, which is useful to readers entering this area.
+Paper Weaknesses:
+W1 (fundamental): The two claimed properties amount to computing a canonical form, which has no known polynomial-time algorithm and is at least as hard as graph isomorphism
+
+The two claimed properties (Eq. 30, Eq. 34) require the token sequences of two graphs to be equal if and only if the graphs are isomorphic, so any tokenizer satisfying both must compute some canonical form. Conversely, composing a canonical form with any invertible serialization yields both properties at once, and the gap this paper describes disappears. Canonization is no easier than isomorphism testing, since given canonical forms isomorphism is decided trivially, and the latter has no known polynomial-time algorithm [R1]. Existing serializations skip canonical relabeling precisely because of this cost.
+
+Here the refinement step (Eq. 12) is one-dimensional Weisfeiler-Leman, which cannot separate regular graphs; once it stalls, the procedure falls back to an individualization-refinement search (Appendix A, following [33]), a paradigm with a known exponential lower bound [R2]. Table 1 contains many near-regular or attribute-sparse graphs: the superpixel datasets, roadNet-CA, IEEE Power Grid.
+
+The paper gives neither a complexity analysis nor any runtime: Eq. (35) covers only compilation and fragment formation, and canonical relabeling is dispatched in one sentence in Appendix B. This also makes Table 2 uninformative, since comparing token length across complexity classes establishes nothing. The complexity of graph isomorphism and canonical labeling is well settled in the literature, yet the paper cites none of it and does not identify the nature of the problem it poses. I would encourage the authors to cover this literature and to analyze each stage with upper and lower bounds.
+
+W2 (fundamental): The encoding is invertible, but invertibility is lost once a generative model is attached, and no path to extending it is given
+
+Expanding a token requires its payload 
+ (Eq. 27), whereas only identifiers are fed to the Transformer (§4.4) and the AR objective operates on identifiers alone (Eq. 43). A model thus generates identifiers for which no 
+ exists, and the sequence cannot be expanded. The reconstruction audit (Eq. 30, Algorithm 1) applies to complete token instances and establishes that an existing graph can be recovered after encoding; it does not imply that model output can be decoded, which is what generation requires and precisely the contribution of SELFIES over SMILES [26].
+
+Nor is a way to close this gap discussed. Having the model also generate 
+ is much harder than predicting identifiers: its ports (Eq. 21) reference already-generated nodes, so the model would have to predict a set of such references at every step while satisfying the local preconditions (Eq. 18), failing which the program is rejected entirely (§3.2).
+
+Relatedly, Tok./edge counts only identifiers and excludes 
+ (§5.2), so the length comparison against self-contained representations does not hold.
+
+W3: The schema 
+ against which reconstructability is judged is never instantiated, which makes the 100% figure unfalsifiable
+
+Reconstructability is assessed relative to 
+ (§3.1), yet the paper never states what 
+ retains for any dataset, while 
+ may require attribute quantization (Eq. 10) and the quantizer carries an out-of-distribution fallback (Appendix A.1). A criterion that is both author-defined and adjustable per dataset cannot support cross-method comparison.
+
+Minor
+
+No formal property is proved: Eqs. (31)–(35) are each followed by one sentence of prose. Eq. (32) also asserts strict equality between the expansion and the compiled program, but emission removes already-emitted content (Eq. 28) and proceeds in canonical fragment order (Algorithm 1), making the expansion a reordering of it.
+Metrics are used loosely: Tok./edge is 0.298 in §5.2, 0.660 in Tables 2 and 5, 0.652 in Table 6, with no statement of the evaluation populations; Recon. is 0.923 in Table 5 while Recon. (%) in Table 2 is a 0/100 audit.
+Ablation and sensitivity conflict: vocabulary size from 1K to 64K leaves three metrics unchanged to three decimals (Table 6), while removing the vocabulary raises Tok./edge from 0.660 to 0.849 (Table 5). Construction is also underspecified: no frequency threshold, no mining procedure for macro entries (§3.3).
+Definitions are placed inconsistently: graph editing is used as a proper noun but defined at the end of Appendix D; Algorithm 1 is referenced in §4 before Eqs. (21), (22), (24), (25), which it uses; Figures 1 and 2 use SHAPE_031, IFACE_n, PATCH_n without stating how they map to the eight families of Eq. (8).
+References. [26], [33] use the submission's numbering. [R1] Babai. Graph Isomorphism in Quasipolynomial Time. STOC 2016. [R2] Neuen and Schweitzer. An Exponential Lower Bound for Individualization-Refinement Algorithms for Graph Isomorphism. STOC 2018.
+
+Resubmission:
+Not marked as a resubmission; no previous-round reviews were available.
+
+Questions And Suggestions For Rebuttal:
+Do the authors agree that the two claimed properties together imply a canonical form usable to decide graph isomorphism? If so, in what sense does this paper close a gap rather than take on a computation as hard as graph isomorphism?
+Please give a complexity analysis of the canonical relabeling stage with a worst-case upper bound, and report per-dataset tokenization time together with the fraction spent in that stage, covering in particular the near-regular or attribute-sparse graphs (superpixel datasets, roadNet-CA, IEEE Power Grid, Synthetic Stress) and the largest inputs (AST-CFG-CPG). Please state the measurement environment and point to the entry point in the anonymous repository that reproduces these timings.
+Equation (14) fixes the order among nodes that refinement cannot separate by taking the lexicographically minimal serialization, implemented within the individualization-refinement paradigm [33]. Does the implementation exhaustively search all candidate orders? If it prunes for runtime, the selected order need not be the true minimum; on which inputs does Eq. (34) then fail to hold?
+How does an autoregressively generated identifier sequence obtain the payload 
+ required for expansion? If it cannot, please state explicitly that the reconstructability claim does not apply to generation and narrow the wording in the abstract and introduction accordingly. If 
+ were serialized into the token stream instead, what would Tok./edge and Tok./node become?
+Please state what 
+ retains for each dataset and how continuous node features are handled. Is the 100% reconstruction figure evaluated against the original attributes or against the quantized ones?
+Section 5.3 attributes the weak results of G2PT and Graph-Tokenization-BPE to the 512-token budget, while Table 7 gives their mean lengths as 502.7 and 446.0. Please report per-method truncation rates and redo Tables 3 and 4 under a budget at which no method is truncated.
+Relevance: 4: High - The work is relevant to the Research track of KDD and is of broad interest to the community
+Novelty: 1: Poor - The paper presents ideas and results that are well-known and have been extensively covered in previous research. There are no new contributions or unique perspectives.
+Technical Quality: 1: Poor - The paper has significant technical errors, methodological flaws, or incorrect conclusions. The work lacks rigor, and the results are unreliable. The overall quality is below acceptable standards, and the technical execution is weak.
+Presentation: 2: Low - The paper has noticeable issues with clarity and coherence. The writing may contain several grammatical and typographical errors. Figures and tables are present but may not be well-integrated or effectively used. The presentation allows for understanding but requires effort from the reader.
+Reproducibility: 2: Low - The paper includes some information about the methods, data, and procedures, but key details are missing. There may be supplementary materials, but they are incomplete or unclear. Reproducing the results would require significant effort and additional information.
+Reviewer Confidence: 4: High - The reviewer is an expert in the subject area and has extensive knowledge of the research methods and context of the paper. They are highly confident in their ability to provide an accurate and thorough assessment. Their evaluation is based on deep expertise and a comprehensive understanding of the work.
+Ethics Review Flag: No
+Ethics Review Description: None
+Add:
+Official Review of Submission1814 by Reviewer HFMW
+Official Reviewby Reviewer HFMW09 Sept 2026, 14:28 (modified: 27 Sept 2026, 22:55)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Reviewer HFMW, AuthorsRevisions
+Paper Summary:
+This paper proposes RPS-GTok, a graph tokenizer designed to provide reconstructable and permutation-stable graph token sequences. It first canonicalizes the graph, compiles it into primitive graph-editing operations, merges recurring primitive fragments using a learned vocabulary, and emits tokens that can be expanded back into the canonical graph.
+
+Paper Strengths:
+Well-motivated problem: Reconstructability and permutation stability are useful properties for graph tokenization, especially when graph representations are consumed by sequence models.
+
+Approach: The primitive-operation representation provides an explicit reconstruction path rather than relying on latent embeddings, and the paper gives formal properties for reconstruction and permutation stability.
+
+Token-level evaluation: The paper did a pretty through evaluations.
+
+Paper Weaknesses:
+Baselines: The paper compares against edge lists, adjacency lists, GraphML, etc., and argues that these methods are reconstructable but not permutation-stable. However, RPS-GTok obtains permutation stability largely through graph canonical relabeling. A much stronger and more direct baseline would be the same canonical relabeling followed by an edge list, adjacency list, or other standard reversible serialization. Such a baseline could also achieve both reconstruction and permutation stability, and would better isolate whether the proposed primitive-fragment tokenization itself provides meaningful benefit. The current comparison makes the joint reconstruction stability result less convincing.
+
+The token-efficiency metric does not measure the complete reconstructable representation: The reported Token/edge and Token/node measure only the model-facing token identifiers, while reconstruction additionally requires token-specific payloads containing ports, attributes, and other expansion arguments. The paper explicitly acknowledges that the lossless footprint depends on these payloads, but does not include their size in the main efficiency comparison. So claims about compact reconstructable tokenization should also report the total storage or serialized size required for reconstruction.
+
+Evaluations: The Transformer experiments predict topology-derived targets such as node count, edge count, density, and triangle count rather than the original semantic labels of the graph datasets. These tasks naturally favor a tokenizer explicitly designed to retain exact topology. I think evaluation on real graph classification, graph reasoning, or generation tasks would be more convincing evidence that the tokenizer benefits downstream Transformer models.
+
+Scalability of canonicalization: The paper acknowledges that canonical relabeling may require individualization-refinement search and can dominate runtime on highly symmetric graphs, without a uniform polynomial-time guarantee. However, no systematic runtime or memory comparison is provided. Since canonicalization is required before every tokenization, this is important for establishing scalability to large graphs.
+
+Resubmission:
+N/A
+
+Questions And Suggestions For Rebuttal:
+See weakness
+
+Relevance: 4: High - The work is relevant to the Research track of KDD and is of broad interest to the community
+Novelty: 3: Moderate - The paper introduces a new and interesting idea or approach that adds value to the field. The contribution is original and represents an advancement of existing knowledge, demonstrating solid innovation and creativity.
+Technical Quality: 2: Low - The paper has several technical weaknesses, such as minor methodological flaws, insufficient analysis, or unsupported conclusions. While the work shows some level of competence, it lacks thoroughness and precision. Improvements are necessary for it to be considered robust.
+Presentation: 3: Moderate - The paper is organized and generally clear. The writing is mostly free of grammatical and typographical errors, making it easy to read. Figures and tables are effectively used to support the text. The presentation facilitates understanding and conveys the key points effectively.
+Reproducibility: 3: Moderate - The paper provides a clear and detailed description of the methods, data, and procedures used. Supplementary materials, such as datasets and code, are available and sufficiently documented. Reproducing the results would be feasible with the provided information, though some effort may still be required.
+Reviewer Confidence: 3: Moderate - The reviewer has a good understanding of the subject area and is familiar with the research methods and context of the paper. They feel confident in their ability to accurately assess the quality and significance of the work. Their evaluation is based on a solid grasp of the content and context.
+Ethics Review Flag: No
+Ethics Review Description: N/A
+Add:
+Official Review of Submission1814 by Reviewer Rkxp
+Official Reviewby Reviewer Rkxp09 Sept 2026, 11:05 (modified: 27 Sept 2026, 22:55)Program Chairs, Senior Area Chairs, Area Chairs, Reviewers Submitted, Reviewer Rkxp, AuthorsRevisions
+Paper Summary:
+This paper proposes RPS-GTok, a graph tokenization framework designed for Transformer-based models, with the goal of achieving both reconstructability and permutation stability. Specifically, RPS-GTok first applies canonical relabeling to mitigate the influence of arbitrary node identifiers on graph serialization. It then compiles each graph into an executable sequence of primitive operations and constructs a graph vocabulary from the training data to compress frequently occurring primitive fragments into compact graph tokens. Structural patterns not covered by the vocabulary are retained through the underlying primitive operations, thereby preserving complete graph information and ensuring reconstructability. Experiments on 21 graph datasets evaluate the tokenization overhead, while tests on 2,602 sampled graphs demonstrate 100% reconstruction accuracy and permutation stability. In addition, the authors evaluate RPS-GTok on multiple topology classification and regression tasks using a fixed Transformer architecture. The results show that RPS-GTok provides compact token sequences while effectively preserving graph topological information and achieving competitive downstream performance.
+
+Paper Strengths:
+1. The research problem is clearly motivated and practically relevant. Graphs lack an inherent linear ordering, whereas Transformers are sensitive to the order of input tokens. Therefore, constructing graph token sequences that preserve topological information while remaining invariant to arbitrary node IDs is a well-motivated and important problem.
+
+2. The proposed method is systematically designed. The overall framework is well structured, with its key components jointly addressing graph serialization, token compression, reconstructability, and permutation stability.
+
+3. The tokenizer-level evaluation is comprehensive. The paper provides extensive tokenizer-level experiments, covering token efficiency, graph reconstruction, and permutation stability across a diverse set of graph datasets.
+
+Paper Weaknesses:
+1. The compactness evaluation is incomplete. The reported token cost mainly accounts for token IDs, while graph reconstruction additionally relies on auxiliary payload information that is not fully reflected in the compression analysis.
+
+2. The downstream evaluation is relatively limited. The evaluated tasks are primarily based on predicting graph topological statistics, with limited validation on more realistic graph learning tasks.
+
+3. The scalability analysis is insufficient. The computational efficiency of canonical relabeling on large-scale or highly symmetric graphs has not been thoroughly evaluated.
+
+Resubmission:
+No
+
+Questions And Suggestions For Rebuttal:
+Please clarify whether the reported token cost includes the reconstruction payload, and provide the actual storage overhead of the complete graph representation.
+It would be helpful to include evaluations on realistic graph learning tasks to verify that the proposed method generalizes beyond topology-statistics prediction.
+Please provide a runtime and scalability analysis of canonical relabeling, particularly for large-scale or highly symmetric graphs.
+Relevance: 4: High - The work is relevant to the Research track of KDD and is of broad interest to the community
+Novelty: 2: Low - The ideas are relatively minor and largely incremental. The work builds heavily on existing research.
+Technical Quality: 3: Moderate - The paper demonstrates solid technical quality with a sound methodology and thorough analysis. The results are reliable and well-supported. There may be minor issues, but they do not significantly undermine the overall quality. The work is competently executed and meets acceptable standards.
+Presentation: 3: Moderate - The paper is organized and generally clear. The writing is mostly free of grammatical and typographical errors, making it easy to read. Figures and tables are effectively used to support the text. The presentation facilitates understanding and conveys the key points effectively.
+Reproducibility: 3: Moderate - The paper provides a clear and detailed description of the methods, data, and procedures used. Supplementary materials, such as datasets and code, are available and sufficiently documented. Reproducing the results would be feasible with the provided information, though some effort may still be required.
+Reviewer Confidence: 3: Moderate - The reviewer has a good understanding of the subject area and is familiar with the research methods and context of the paper. They feel confident in their ability to accurately assess the quality and significance of the work. Their evaluation is based on a solid grasp of the content and context.
+Ethics Review Flag: No
+Ethics Review Description: NA

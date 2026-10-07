@@ -1,0 +1,77 @@
+{
+  "cachefixed_permutation": {
+    "collab": {
+      "canonical_equality": 0.9333333333333333,
+      "exact_pair_fraction": 0.0,
+      "raw_equality": 0.2,
+      "rps_equality": 0.9666666666666667
+    },
+    "imdb_binary": {
+      "canonical_equality": 0.9,
+      "exact_pair_fraction": 0.0,
+      "raw_equality": 0.25,
+      "rps_equality": 0.9166666666666666
+    },
+    "mutag": {
+      "canonical_equality": 0.9,
+      "exact_pair_fraction": 0.9,
+      "raw_equality": 0.0,
+      "rps_equality": 0.9166666666666666
+    },
+    "proteins": {
+      "canonical_equality": 1.0,
+      "exact_pair_fraction": 0.8,
+      "raw_equality": 0.0,
+      "rps_equality": 1.0
+    }
+  },
+  "fixed_budget_mae": {
+    "128/edge_list": 0.1728895416966191,
+    "128/rps_gtok_plus": 0.17770333643312808,
+    "32/edge_list": 0.17509807480706108,
+    "32/rps_gtok_plus": 0.1774008450684724,
+    "512/edge_list": 0.16895556449890137,
+    "512/rps_gtok_plus": 0.17750490153277362
+  },
+  "gin_balanced_accuracy": {
+    "COLLAB": 0.6476205791957034,
+    "IMDB-BINARY": 0.6207908557306148,
+    "MUTAG": 0.8757575757575756,
+    "PROTEINS": 0.7004409457339177
+  },
+  "no_truncation": {
+    "canonical_edge_list": {
+      "balanced_accuracy": 0.5972222222222222,
+      "collapse_runs": 0,
+      "max_truncation": 0.0
+    },
+    "edge_list": {
+      "balanced_accuracy": 0.6319444444444445,
+      "collapse_runs": 0,
+      "max_truncation": 0.0
+    },
+    "rps_gtok_plus": {
+      "balanced_accuracy": 0.5347222222222222,
+      "collapse_runs": 0,
+      "max_truncation": 0.0
+    }
+  },
+  "semantic_balanced_accuracy": {
+    "IMDB-BINARY/canonical_edge_list": 0.6319,
+    "IMDB-BINARY/edge_list": 0.6806,
+    "IMDB-BINARY/rps_gtok_full": 0.6528,
+    "IMDB-BINARY/rps_gtok_identifier": 0.5972,
+    "MUTAG/canonical_edge_list": 0.7183,
+    "MUTAG/edge_list": 0.8175,
+    "MUTAG/rps_gtok_full": 0.6071,
+    "MUTAG/rps_gtok_identifier": 0.6706,
+    "PROTEINS/canonical_edge_list": 0.6875,
+    "PROTEINS/edge_list": 0.6562,
+    "PROTEINS/rps_gtok_full": 0.8125,
+    "PROTEINS/rps_gtok_identifier": 0.6354
+  },
+  "structural_mae_wins": {
+    "edge_list": 10,
+    "rps_gtok_plus": 6
+  }
+}

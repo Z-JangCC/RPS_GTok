@@ -1,0 +1,4 @@
+view,seeds,mean_balanced_accuracy,std_balanced_accuracy,mean_macro_f1,collapse_rate,max_truncation_rate
+canonical_edge_list,3,0.75,0.02268046058132569,0.7485489110295612,0.0,0.0
+edge_list,3,0.75,0.02268046058132569,0.7469741317993925,0.0,0.0
+rps_gtok_plus,3,0.75,0.02268046058132569,0.7471482804062036,0.0,0.0

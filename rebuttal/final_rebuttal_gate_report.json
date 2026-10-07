@@ -1,0 +1,38 @@
+{
+  "all_commands_pass": true,
+  "checks": [
+    {
+      "label": "evidence_audit",
+      "output_tail": "rebuttal evidence audit passed\n",
+      "returncode": 0
+    },
+    {
+      "label": "matched_consumer_audit",
+      "output_tail": "[\n  {\n    \"name\": \"E14_post_schema_union\",\n    \"metrics\": 9,\n    \"parameter_counts\": [\n      247842\n    ],\n    \"max_test_truncation\": 0.0,\n    \"errors\": []\n  },\n  {\n    \"name\": \"E15_post_schema_union\",\n    \"metrics\": 9,\n    \"parameter_counts\": [\n      70433\n    ],\n    \"max_test_truncation\": 0.0,\n    \"errors\": []\n  }\n]\n",
+      "returncode": 0
+    },
+    {
+      "label": "pytest",
+      "output_tail": ".............................                                            [100%]\n=============================== warnings summary ===============================\ntests/test_consumption_component.py: 10 warnings\n  <python-environment>/site-packages/sklearn/metrics/_classification.py:2524: UserWarning: y_pred contains classes not in y_true\n    warnings.warn(\"y_pred contains classes not in y_true\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n29 passed, 10 warnings in 20.32s\n",
+      "returncode": 0
+    },
+    {
+      "label": "release_verify",
+      "output_tail": "loaded 140 rows from representative summary\npackage imports, release artifacts, consumer code, and anonymity audit look consistent\n",
+      "returncode": 0
+    },
+    {
+      "label": "number_manifest",
+      "output_tail": "wrote rebuttal/rebuttal_number_manifest.json\n",
+      "returncode": 0
+    }
+  ],
+  "links": {
+    "missing": [],
+    "ok": true
+  },
+  "manuscript_pdf": {
+    "exists": true,
+    "path": "<submission-artifact>/main_four.pdf"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "class_eligible": false,
+  "classification_target": "train_median_regime_only",
+  "continuous_target": "log1p_effective_resistance_with_normalized_cycle_rank_fallback",
+  "dataset": "ieee_power_grid",
+  "input_fields_forbidden": [
+    "y",
+    "node_attr",
+    "edge_attr",
+    "metadata",
+    "graph_id"
+  ],
+  "input_fields_used": [
+    "num_nodes",
+    "edges",
+    "directed"
+  ],
+  "label_kind": "constructed_structural_proxy",
+  "label_sidecar_only": true,
+  "records": 3,
+  "split_classes": {
+    "test": [
+      1
+    ],
+    "train": [
+      1
+    ],
+    "val": [
+      0
+    ]
+  },
+  "split_counts": {
+    "test": 1,
+    "train": 1,
+    "val": 1
+  },
+  "threshold": 1.1379251939098425,
+  "threshold_fit_split": "train"
+}

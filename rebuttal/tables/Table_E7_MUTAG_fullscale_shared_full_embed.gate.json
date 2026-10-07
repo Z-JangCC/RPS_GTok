@@ -1,0 +1,26 @@
+{
+  "comparisons": [
+    {
+      "baseline": "canonical_edge_list",
+      "ci95_high": 0.10151515151515156,
+      "ci95_low": 0.043939393939393945,
+      "mean_delta_rps_minus_baseline": 0.08181818181818186,
+      "paired_seeds": 3,
+      "rps_strictly_better": true
+    },
+    {
+      "baseline": "edge_list",
+      "ci95_high": 0.1454545454545455,
+      "ci95_low": 0.0,
+      "mean_delta_rps_minus_baseline": 0.06313131313131315,
+      "paired_seeds": 3,
+      "rps_strictly_better": false
+    }
+  ],
+  "gate": {
+    "all_baseline_ci_lower_bounds_positive": false,
+    "no_collapsed_rps_runs": true,
+    "primary_metric": "balanced_accuracy",
+    "rps_view": "rps_gtok_plus"
+  }
+}

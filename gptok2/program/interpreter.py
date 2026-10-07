@@ -249,7 +249,7 @@ def _as_int(value) -> int | None:
 
 
 def _emit(state: InterpreterState, code) -> None:
-    base = state.graph.number_of_nodes()
+    base = max(state.graph.nodes(), default=-1) + 1
     state.graph.add_nodes_from(range(base, base + code.prototype_num_nodes))
     for u, v in code.prototype_edges:
         state.graph.add_edge(base + int(u), base + int(v))
@@ -419,11 +419,8 @@ def _contract_nodes(state: InterpreterState, keep: int, drop: int) -> None:
         if nb != keep:
             state.graph.add_edge(keep, nb)
     state.graph.remove_node(drop)
-    mapping = {old: i for i, old in enumerate(sorted(state.graph.nodes()))}
-    state.graph = nx.relabel_nodes(state.graph, mapping, copy=True)
-    keep_new = mapping.get(keep, keep)
     for port in state.ports:
-        port.node = keep_new if port.node in {keep, drop} else mapping.get(port.node, port.node)
+        port.node = keep if port.node in {keep, drop} else port.node
     for anchor in state.anchors + state.edge_anchors:
-        anchor.nodes = tuple(keep_new if n in {keep, drop} else mapping.get(n, n) for n in anchor.nodes)
+        anchor.nodes = tuple(keep if n in {keep, drop} else n for n in anchor.nodes)
 

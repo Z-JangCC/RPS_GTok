@@ -155,6 +155,10 @@ class TokenizedGraphDataset(Dataset):
         item: dict[str, torch.Tensor] = {
             "ids": ids,
             "length": torch.tensor(min(len(ex.tokens) + 2, self.max_len), dtype=torch.long),
+            "original_length": torch.tensor(len(ex.tokens) + 2, dtype=torch.long),
+            "effective_length": torch.tensor(min(len(ex.tokens) + 2, self.max_len), dtype=torch.long),
+            "truncated": torch.tensor(int(len(ex.tokens) + 2 > self.max_len), dtype=torch.long),
+            "discarded_tokens": torch.tensor(max(0, len(ex.tokens) + 2 - self.max_len), dtype=torch.long),
             "structural_bias": structural_bias_tensor(ex.node_refs, ex.edge_pairs, self.max_len),
         }
         item.update(token_feature_vectors(ex.tokens, self.max_len))
@@ -175,14 +179,28 @@ class TokenizedGraphDataset(Dataset):
 def collate_tokenized_graphs(batch: list[dict[str, torch.Tensor]]) -> dict[str, torch.Tensor]:
     keys = set().union(*(item.keys() for item in batch))
     out: dict[str, torch.Tensor] = {}
+    # Dataset encoding uses the experiment's global max_len to make truncation
+    # auditable.  Padding, however, is a batch concern: retaining 512/2048
+    # positions for every short graph wastes most Transformer FLOPs and made
+    # the large semantic audit appear to hang.  Dynamic padding preserves the
+    # exact truncation decisions while reducing each batch to its longest
+    # effective sequence.
+    batch_width = max(
+        int(item["effective_length"].item())
+        for item in batch
+        if "effective_length" in item
+    ) if batch and "effective_length" in batch[0] else None
     for key in sorted(keys):
         values = [item[key] for item in batch if key in item]
         if key == "structural_bias":
-            width = max(v.shape[-1] for v in values)
+            width = min(max(v.shape[-1] for v in values), int(batch_width or max(v.shape[-1] for v in values)))
             tensor = torch.zeros((len(batch), width, width), dtype=torch.float32)
             for idx, value in enumerate(values):
-                tensor[idx, : value.shape[0], : value.shape[1]] = value
+                local = value[:width, :width]
+                tensor[idx, : local.shape[0], : local.shape[1]] = local
             out[key] = tensor
+        elif batch_width is not None and values[0].ndim == 1 and values[0].shape[0] > 1:
+            out[key] = torch.stack([value[:batch_width] for value in values])
         else:
             out[key] = torch.stack(values)
     return out

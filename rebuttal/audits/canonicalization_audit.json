@@ -1,0 +1,131 @@
+[
+  {
+    "graph": "isolated_nodes",
+    "nodes": 6,
+    "edges": 0,
+    "tie_groups": [
+      6
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 720,
+    "search_branches": 720,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.0016167890280485153
+  },
+  {
+    "graph": "cycle",
+    "nodes": 8,
+    "edges": 8,
+    "tie_groups": [
+      8
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 40320,
+    "search_branches": 40320,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.20783974044024944
+  },
+  {
+    "graph": "complete",
+    "nodes": 6,
+    "edges": 15,
+    "tie_groups": [
+      6
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 720,
+    "search_branches": 720,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.005880087614059448
+  },
+  {
+    "graph": "regular",
+    "nodes": 10,
+    "edges": 15,
+    "tie_groups": [
+      10
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 100001,
+    "search_branches": 100001,
+    "exact_completed": false,
+    "fallback_used": true,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.8338209930807352
+  },
+  {
+    "graph": "star",
+    "nodes": 9,
+    "edges": 8,
+    "tie_groups": [
+      8
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 40320,
+    "search_branches": 40320,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.22562536410987377
+  },
+  {
+    "graph": "bipartite",
+    "nodes": 8,
+    "edges": 16,
+    "tie_groups": [
+      8
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 40320,
+    "search_branches": 40320,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.3307828214019537
+  },
+  {
+    "graph": "repeated_motif",
+    "nodes": 8,
+    "edges": 8,
+    "tie_groups": [
+      8
+    ],
+    "refinement_rounds": 2,
+    "search_nodes": 40320,
+    "search_branches": 40320,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.20818202570080757
+  },
+  {
+    "graph": "sparse_path",
+    "nodes": 20,
+    "edges": 19,
+    "tie_groups": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "refinement_rounds": 10,
+    "search_nodes": 1024,
+    "search_branches": 1024,
+    "exact_completed": true,
+    "fallback_used": false,
+    "stability_rate": 1.0,
+    "canonicalization_sec": 0.013406280428171158
+  }
+]

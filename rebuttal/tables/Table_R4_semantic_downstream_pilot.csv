@@ -1,0 +1,5 @@
+parameters,test_accuracy,test_macro_f1,truncation_rate,view
+70994,0.600,0.375,0.000,edge_list
+78962,0.800,0.444,0.000,canonical_edge_list
+48290,0.800,0.444,0.000,rps_gtok_identifier
+58802,0.200,0.167,0.000,rps_gtok_full

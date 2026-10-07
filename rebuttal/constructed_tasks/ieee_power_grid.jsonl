@@ -1,0 +1,3 @@
+{"graph_id": "pandapower_case9", "regime_label": 1, "split": "test", "target": 1.1786549963416455, "target_source": "log1p_effective_resistance"}
+{"graph_id": "pandapower_case14", "regime_label": 0, "split": "val", "target": 0.9824473409601582, "target_source": "log1p_effective_resistance"}
+{"graph_id": "pandapower_case30", "regime_label": 1, "split": "train", "target": 1.1379251939098425, "target_source": "log1p_effective_resistance"}

@@ -1,0 +1,10 @@
+{
+  "exact_backend": "pynauty",
+  "certificate_encoding": "direct_simple_or_wl_refined_attributed_incidence_v3",
+  "direct_simple_graph_fast_path": true,
+  "undirected_reciprocal_coo_is_one_semantic_edge": true,
+  "per_graph_timeout_sec": 60.0,
+  "workers": 8,
+  "max_graphs": 60,
+  "no_label_or_task_claim": true
+}

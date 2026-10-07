@@ -1,0 +1,250 @@
+**Reviewer 3HWf**
+
+We sincerely thank the reviewer for noting that our design is coherent at a
+high level. We have carried out the following supplementary experiments and
+provided further explanations regarding the issues you raised.
+
+First, node-ID permutations can change edge/DFS sequences although the graph is
+unchanged. Canonicalization fixes order, not payload; primitives are
+order-sensitive and BPE lacks preconditions. RPS-GTok couples canonical
+ordering, executable primitives and payload-bearing fragments.
+
+Second, source-aligned PROTEINS/MOLHIV labels and physical power flow extend the
+evidence beyond surrogate targets.
+
+| Control | Raw | Canonical | RPS-GTok |
+|---|---:|---:|---:|
+| PROTEINS semantic BA | .6562 | .6875 | .8125 |
+| MOLHIV semantic BA | .7500 | .7222 | .7685 |
+| PowerFlow MAE | .03942 | .03829 | .03910 |
+| 512-token truncation (%) | 10 | 10 | 0 |
+| No-truncation E14/E15 (%) | 0 | 0 | 0 |
+| Stability | .0238 | .725--.778 | .9550 |
+
+Third, no-truncation MOLHIV and physical controls retain the RPS-GTok advantage
+over raw serialization. Full-Embed is auxiliary; comparisons use shared
+adapters, union vocabulary and equal params. Canonical relabeling improves but
+is not near-perfect: edge/adjacency/DFS .7249, BFS .7778; canonical BPE matches
+this range. We use
+
+$$
+\\mathrm{Stab}=|\\Pi|^{-1}\\sum_{\\pi}\\mathbf{1}[S(\\pi G)=S(G)]
+$$
+
+Finally, the exact backend certifies 974/974 graphs across 21 datasets,
+including 191 directed inputs, under 300 s/graph. Wall times are 2.374 s (AST),
+2.235 s (IEEE), 2.436 s (Road), 13.152 s (Synthetic) and 212.558 s (OGBG-PPA);
+measured canonicalization shares are 10.8%, 6.45%, 5.87% and 7.04% for AST,
+IEEE, Road and Synthetic.
+
+We sincerely thank the reviewer again for the time and effort devoted to
+evaluating our manuscript, and for the thoughtful and valuable comments that
+have greatly helped us improve its quality and clarity. We hope that the
+clarifications, additional analyses, and new experimental results provided in
+this rebuttal have adequately addressed the reviewer's concerns. For the
+issues you raised, our anonymous repository linked in the submission provides
+more detailed explanations, concrete experimental settings, and complete
+result data.
+
+**Reviewer 8tZd**
+
+We sincerely thank the reviewer for recognizing graph tokenization as an
+emerging and meaningful problem for graph foundation models. We have carried
+out the following supplementary experiments and provided further explanations
+regarding the issues you raised.
+
+First, the deeper gap is between graph invariance and ordered Transformer input.
+An isomorphic triangle can yield different traversal tokens; GNN equivariance
+does not make those inputs identical. Serialization/BPE lacks executable
+ports/preconditions; latent VQ/pooling is not lossless. RPS-GTok defines
+
+$$
+\\tau_t=(i_t,p_t),\\qquad
+\\mathcal{E}_{\\Sigma}(\\tau_{1:T})=G_{\\Sigma}
+$$
+
+combining a canonical frame,
+primitive compilation, payload-bearing fragments and primitive fallback.
+
+Second, the paired experiment uses the same sequence and drop mask for decoding
+and training, directly quantifying the information path. Strict MUTAG
+reconstruction at 0/5/10/20% deletion is .973/.811/.243/.108; PROTEINS gives
+.750/.250/.050/.000.
+
+| Evidence | Result |
+|---|---|
+| PROTEINS semantic BA (raw/canonical/RPS-GTok) | .6562/.6875/.8125 |
+| MOLHIV semantic BA (raw/canonical/RPS-GTok) | .7500/.7222/.7685 |
+| PowerFlow MAE (raw/canonical/RPS-GTok) | .03942/.03829/.03910 |
+| E14/E15 parameters; test truncation | 247,842/70,433; 0% for all views |
+| GIN mean BA: MUTAG/PROTEINS/IMDB/COLLAB | .876/.700/.621/.648 |
+
+Third, E14/E15 use one adapter, union vocabulary and three seeds; equal
+parameters rule out added capacity. The paper's complexity boundary is
+
+$$
+\\mathrm{cost}_{\\mathrm{prim}}(G)=O(n+m_e+n_a),\\qquad
+\\mathrm{cost}_{\\mathrm{frag}}(G)=O(c(G)\\log c(G)).
+$$
+
+Canonicalization is an offline preprocessing cost and may branch on symmetric graphs. GIN is a matched
+model-level reference: RPS-GTok exceeds it on PROTEINS and IMDB under the
+Transformer interface; foundation models change backbone, pretraining and
+tokenization simultaneously.
+
+We sincerely thank the reviewer again for the time and effort devoted to
+evaluating our manuscript, and for the thoughtful and valuable comments that
+have greatly helped us improve its quality and clarity. We hope that the
+clarifications, additional analyses, and new experimental results provided in
+this rebuttal have adequately addressed the reviewer's concerns. For the
+issues you raised, our anonymous repository linked in the submission provides
+more detailed explanations, concrete experimental settings, and complete
+result data.
+
+**Reviewer bYQg**
+
+We sincerely thank the reviewer for the precise questions. We have carried out
+the following supplementary experiments and provided further explanations
+regarding the issues you raised. First, we agree that the two properties define
+a canonical reference; RPS-GTok does not remove GI hardness. Its gap is the
+executable payload-aware contract layered on it.
+
+Second, individualization-refinement has worst-case
+$$O(n!\\,p(n,m,q)),$$
+while primitive and fragment stages are
+$$O(n+m_e+n_a),\\qquad O(c(G)\\log c(G)).$$
+The audit certifies 974/974 graphs, including 191 directed
+inputs; AST/IEEE/Road/Synthetic/PPA times are
+2.374/2.235/2.436/13.152/212.558 s, with shares 10.8/6.45/5.87/7.04%.
+
+Third, exact branches exhaustively certify the selected canonical certificate;
+bounded/pruned branches are labeled fallback and Eq. (34) is not asserted for
+them. No released v12 exact certificate violates Eq. (34): all 974 permutation
+pairs agree.
+
+Fourth, an identifier-only autoregressive sequence does not recover payload $P$
+or $\\alpha$ automatically. Reconstruction is claimed for complete $(I,P)$ instances:
+$$D(I,P;\\Sigma)=G_{\\Sigma}.$$ Complete-stream checks are 100% on
+MUTAG/IMDB; mean identifier/stream tokens are 8.2/42.6 and 28.5/138.15. We
+therefore compare complete storage in bytes, not an undefined Tok./edge or
+Tok./node obtained by hiding $\\alpha$.
+
+Fifth, all 21 manifests specify retained topology, types, attributes, direction,
+target and raw continuous mode. The 100% figure is against this representation;
+loops, duplicates, directions and attributes are audited.
+
+Sixth, at 512 tokens raw/canonical edge views truncate 10% while RPS-GTok
+truncates 0%; locked no-truncation controls set all views to 0%, and E14/E15
+use 0%. Seventh, corrected no-truncation controls---not an uncontrolled
+512-token attribution---are authoritative; the complete per-view audit is in
+the anonymous repository.
+
+We sincerely thank the reviewer again for the time and effort devoted to
+evaluating our manuscript, and for the thoughtful and valuable comments that
+have greatly helped us improve its quality and clarity. We hope that the
+clarifications, additional analyses, and new experimental results provided in
+this rebuttal have adequately addressed the reviewer's concerns. For the
+issues you raised, our anonymous repository linked in the submission provides
+more detailed explanations, concrete experimental settings, and complete
+result data.
+
+**Reviewer HFMW**
+
+We sincerely thank the reviewer for identifying graph representations consumed
+by sequence models as a well-motivated problem. We have carried out the
+following supplementary experiments and provided further explanations
+regarding the issues you raised.
+
+First, the same canonicalizer is applied to edge/adjacency/DFS/BFS and BPE.
+Canonical edge/adjacency/DFS, BFS, BPE and RPS-GTok reach .7249, .7778, the
+same range and .9550 under
+
+$$
+\\mathrm{Stab}=|\\Pi|^{-1}\\sum_{\\pi}\\mathbf{1}[S(\\pi G)=S(G)].
+$$
+
+RPS-GTok adds executable fragments, payloads and fallback.
+
+| Evidence | Raw | Canonical | RPS-GTok |
+|---|---:|---:|---:|
+| Stability | .0238 | .725--.778 | .9550 |
+| Topology-only compact bytes | 27.417 | 27.417 | 16.208 |
+| RPS topology/attribute/full bytes | -- | -- | 334.417/467.958/802.375 |
+| PROTEINS semantic BA | .6562 | .6875 | .8125 |
+| MOLHIV semantic BA | .7500 | .7222 | .7685 |
+| PowerFlow MAE | .03942 | .03829 | .03910 |
+
+Second, efficiency is reported at both levels:
+
+$$
+B_{\\mathrm{total}}=B_{\\mathrm{id}}+B_{\\mathrm{payload}}+B_{\\mathrm{stream}}+B_{\\mathrm{artifact}}.
+$$
+The compact 24-graph audit gives topology-only RPS-GTok context 16.208 bytes
+versus 27.417 for raw/canonical edge (40.9% lower), because codebook IDs merge
+recurring substructures. RPS topology is 334.417; attributes 467.958; full
+total 802.375 bytes. The attribute cost is explicit.
+
+Third, source-aligned PROTEINS/MOLHIV and case-disjoint power flow extend
+topology-only evaluation. E14/E15 use shared adapters, union vocabulary, three
+seeds, equal parameters (247,842/70,433) and 0% truncation; RPS-GTok improves
+over raw in the reported regimes.
+
+Finally, the exact backend certifies 974/974 graphs across 21 datasets,
+including 191 directed inputs, under 300 s/graph. Wall times are 2.374 s (AST),
+2.235 s (IEEE), 2.436 s (Road), 13.152 s (Synthetic) and 212.558 s (PPA);
+shares are 10.8%, 6.45%, 5.87% and 7.04%, respectively.
+
+We sincerely thank the reviewer again for the time and effort devoted to
+evaluating our manuscript, and for the thoughtful and valuable comments that
+have greatly helped us improve its quality and clarity. We hope that the
+clarifications, additional analyses, and new experimental results provided in
+this rebuttal have adequately addressed the reviewer's concerns. For the
+issues you raised, our anonymous repository linked in the submission provides
+more detailed explanations, concrete experimental settings, and complete
+result data.
+
+**Reviewer Rkxp**
+
+We sincerely thank the reviewer for recognizing that the proposed method is
+systematically designed, and for the constructive suggestions. We have carried
+out the following supplementary experiments and provided further explanations
+regarding the issues you raised.
+
+First, the reported identifier cost is not the complete reconstruction cost.
+We use
+
+$$
+B_{\\mathrm{total}}=B_{\\mathrm{id}}+B_{\\mathrm{payload}}+B_{\\mathrm{stream}}+B_{\\mathrm{artifact}}.
+$$
+
+| Evidence | Raw edge | Canonical edge | RPS-GTok |
+|---|---:|---:|---:|
+| Topology-only compact bytes | 27.417 | 27.417 | 16.208 |
+| RPS topology/attribute/full bytes | -- | -- | 334.417/467.958/802.375 |
+| MOLHIV BA | .7500 | .7222 | .7685 |
+| PowerFlow MAE | .03942 | .03829 | .03910 |
+
+The compact 24-graph audit shows a 40.9% lower topology-only model-facing
+context because codebook IDs represent recurring substructures jointly. The
+attribute component is explicit semantic information, not hidden overhead;
+complete-stream roundtrip is 100% on MUTAG and IMDB.
+
+Second, the downstream validation extends beyond topology statistics through
+source-aligned PROTEINS/MOLHIV labels and case-disjoint power flow. E14/E15 use
+shared adapters, union vocabulary, three seeds, equal parameters (247,842/70,433)
+and 0% truncation; RPS-GTok improves over raw in the reported regimes. The
+all-21 structural task is explicitly marked a topology proxy.
+
+Finally, the exact backend certifies 974/974 graphs across 21 datasets,
+including 191 directed inputs, under 300 s/graph. Wall times are 2.374 s (AST),
+2.235 s (IEEE), 2.436 s (Road), 13.152 s (Synthetic) and 212.558 s (PPA);
+bounded canonicalization shares are 10.8%, 6.45%, 5.87% and 7.04%, respectively.
+
+We sincerely thank the reviewer again for the time and effort devoted to
+evaluating our manuscript, and for the thoughtful and valuable comments that
+have greatly helped us improve its quality and clarity. We hope that the
+clarifications, additional analyses, and new experimental results provided in
+this rebuttal have adequately addressed the reviewer's concerns. For the
+issues you raised, our anonymous repository linked in the submission provides
+more detailed explanations, concrete experimental settings, and complete
+result data.

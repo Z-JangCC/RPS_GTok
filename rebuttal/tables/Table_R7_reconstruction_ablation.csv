@@ -1,0 +1,5 @@
+graphs,mean_tokens,nominal_coverage,strict_reconstruction_rate,valid_program_rate,variant
+24,4.666666666666667,1.0,1.0,1.0,drop_0
+24,4.125,0.9,0.5,1.0,drop_10
+24,3.5833333333333335,0.8000000000000002,0.125,1.0,drop_20
+24,4.625,0.9499999999999998,1.0,1.0,drop_5

@@ -1,0 +1,17 @@
+{
+  "datasets": 21,
+  "graphs_per_dataset": 6,
+  "permutations_per_graph": 3,
+  "views": [
+    "edge_list_bpe",
+    "canonical_edge_list_bpe",
+    "canonical_adjacency_list_bpe",
+    "canonical_dfs_order_bpe",
+    "canonical_bfs_order_bpe"
+  ],
+  "bpe_fit": "original graph views before permutation evaluation",
+  "bpe_min_frequency": 2,
+  "bpe_max_merges": 500,
+  "canonicalization": "shared SchemaSpec canonicalizer; max_search_nodes=100",
+  "result": "canonical BPE means reproduce canonical edge/adjacency/DFS/BFS stability ranges"
+}

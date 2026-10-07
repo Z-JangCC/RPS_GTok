@@ -1,0 +1,13 @@
+dataset,view,n_seeds,accuracy_mean,accuracy_sd,balanced_accuracy_mean,balanced_accuracy_sd,macro_f1_mean,macro_f1_sd
+IMDB-BINARY,canonical_edge_list,3,0.6500,0.1000,0.6319,0.1069,0.6283,0.1050
+IMDB-BINARY,edge_list,3,0.6667,0.0764,0.6806,0.0789,0.6638,0.0770
+IMDB-BINARY,rps_gtok_full,3,0.6833,0.1258,0.6528,0.1256,0.6568,0.1306
+IMDB-BINARY,rps_gtok_identifier,3,0.5500,0.0500,0.5972,0.0318,0.5396,0.0604
+MUTAG,canonical_edge_list,3,0.7833,0.0577,0.7183,0.1311,0.7038,0.1313
+MUTAG,edge_list,3,0.8333,0.0577,0.8175,0.0599,0.8077,0.0641
+MUTAG,rps_gtok_full,3,0.6500,0.1000,0.6071,0.0630,0.5958,0.0793
+MUTAG,rps_gtok_identifier,3,0.7167,0.0289,0.6706,0.0248,0.6666,0.0221
+PROTEINS,canonical_edge_list,3,0.8000,0.0000,0.6875,0.0000,0.6875,0.0000
+PROTEINS,edge_list,3,0.8500,0.0000,0.6562,0.0541,0.6848,0.0480
+PROTEINS,rps_gtok_full,3,0.8500,0.0500,0.8125,0.0312,0.7873,0.0552
+PROTEINS,rps_gtok_identifier,3,0.8167,0.0289,0.6354,0.0477,0.6508,0.0402

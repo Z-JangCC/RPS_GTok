@@ -1,0 +1,40 @@
+{
+  "datasets": [
+    "ast_cfg_cpg",
+    "cifar10_sp",
+    "citeseer",
+    "collab",
+    "cora",
+    "enzymes",
+    "fb15k_237",
+    "ieee_power_grid",
+    "imdb_binary",
+    "mnist_sp",
+    "mutag",
+    "ogbg_code2",
+    "ogbg_molhiv",
+    "ogbg_molpcba",
+    "ogbg_ppa",
+    "ogbn_arxiv",
+    "proteins",
+    "pubmed",
+    "road_networks",
+    "synthetic_stress",
+    "wn18rr"
+  ],
+  "input_fields_forbidden": [
+    "y",
+    "node_attr",
+    "edge_attr",
+    "metadata",
+    "graph_id"
+  ],
+  "input_fields_used": [
+    "num_nodes",
+    "edges",
+    "directed"
+  ],
+  "label_source": "topology_only_proxy",
+  "no_semantic_claim": true,
+  "split_rule": "sha256-sorted graph IDs with deterministic non-empty 70/15/15 partitions"
+}

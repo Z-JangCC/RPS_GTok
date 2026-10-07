@@ -26,6 +26,7 @@ from rps_gtok_consumption.training import (
     train_model,
 )
 from rps_gtok_consumption.views import TokenBPE, TokenViewBuilder
+from rps_gtok_consumption.exact_backend import exact_canonical_order, exact_certificate
 
 __all__ = [
     "EvaluationResult",
@@ -42,6 +43,8 @@ __all__ = [
     "build_model",
     "collate_tokenized_graphs",
     "evaluate",
+    "exact_canonical_order",
+    "exact_certificate",
     "examples_from_records",
     "load_examples",
     "parameter_counts",

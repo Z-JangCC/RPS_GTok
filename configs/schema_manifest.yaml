@@ -1,0 +1,71 @@
+version: 1
+default:
+  name: topology
+  directed: false
+  multiedge: false
+  self_loop: false
+  retain_node_type: false
+  retain_edge_type: false
+  retain_node_attr: false
+  retain_edge_attr: false
+  continuous_mode: raw
+  max_search_nodes: 100000
+
+datasets:
+  AST-CFG-CPG: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  CIFAR10-Superpixels: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  CiteSeer: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  COLLAB: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: false, retain_edge_type: false, retain_node_attr: false, retain_edge_attr: false, reconstruction_target: topology}
+  ENZYMES: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: false, retain_node_attr: false, retain_edge_attr: false, reconstruction_target: topology_node_type}
+  FB15k-237: {name: materialized_directed, directed: true, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: directed_topology_typed_quantized_attributes}
+  IEEE-Power-Grid: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  MNIST-Superpixels: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  OGBG-CODE2: {name: materialized_directed, directed: true, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: directed_topology_typed_quantized_attributes}
+  OGBG-MOLHIV: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  OGBG-MOLPCBA: {name: materialized_simple_undirected, directed: false, multiedge: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  OGBG-PPA: {name: materialized_simple_undirected, directed: false, multiedge: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  OGBN-Arxiv: {name: materialized_directed, directed: true, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: directed_topology_typed_quantized_attributes}
+  PubMed: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  RoadNet-CA: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  Synthetic-Stress: {name: materialized_simple_undirected, directed: false, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: topology_typed_quantized_attributes}
+  WN18RR: {name: materialized_directed, directed: true, multiedge: false, self_loop: false, retain_node_type: true, retain_edge_type: true, retain_node_attr: true, retain_edge_attr: true, reconstruction_target: directed_topology_typed_quantized_attributes}
+  MUTAG:
+    name: tu_simple_undirected
+    directed: false
+    multiedge: false
+    self_loop: false
+    retain_node_type: true
+    retain_edge_type: false
+    retain_node_attr: false
+    retain_edge_attr: false
+    reconstruction_target: topology_node_type
+  PROTEINS:
+    name: tu_simple_undirected
+    directed: false
+    multiedge: false
+    self_loop: false
+    retain_node_type: true
+    retain_edge_type: false
+    retain_node_attr: false
+    retain_edge_attr: false
+    reconstruction_target: topology_node_type
+  IMDB-BINARY:
+    name: tu_simple_undirected
+    directed: false
+    multiedge: false
+    self_loop: false
+    retain_node_type: false
+    retain_edge_type: false
+    retain_node_attr: false
+    retain_edge_attr: false
+    reconstruction_target: topology
+  Cora:
+    name: citation_topology
+    directed: false
+    multiedge: false
+    self_loop: false
+    retain_node_type: true
+    retain_edge_type: false
+    retain_node_attr: false
+    retain_edge_attr: false
+    reconstruction_target: topology_node_type

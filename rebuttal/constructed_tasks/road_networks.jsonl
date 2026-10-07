@@ -1,0 +1,8 @@
+{"graph_id": "roadNet-CA_ego_0", "regime_label": 1, "split": "train", "target": 0.7835012785117974, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_1", "regime_label": 1, "split": "val", "target": 0.7429126769241553, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_2", "regime_label": 0, "split": "test", "target": 0.6896612370655243, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_3", "regime_label": 0, "split": "train", "target": 0.6815413183677631, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_4", "regime_label": 0, "split": "train", "target": 0.7023324278007845, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_5", "regime_label": 1, "split": "train", "target": 0.7634930191683645, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_6", "regime_label": 1, "split": "train", "target": 1.005820939701851, "target_source": "log1p_effective_resistance"}
+{"graph_id": "roadNet-CA_ego_7", "regime_label": 0, "split": "train", "target": 0.7004251206008315, "target_source": "log1p_effective_resistance"}

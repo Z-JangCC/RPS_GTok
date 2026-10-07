@@ -1,0 +1,5 @@
+dataset,graphs,ok,equal,timeout,error,directed,certified_equal_rate,wall_sec,timeout_sec,certificate
+enzymes,60,60,60,0,0,0,1.0,3.701505195349455,1.0,pynauty_colored_incidence_graph
+imdb_binary,60,58,58,2,0,0,1.0,10.5710330568254,1.0,pynauty_colored_incidence_graph
+mutag,60,60,60,0,0,0,1.0,2.7629119399935007,1.0,pynauty_colored_incidence_graph
+proteins,57,55,55,2,0,0,1.0,8.456117017194629,1.0,pynauty_colored_incidence_graph

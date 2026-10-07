@@ -11,9 +11,9 @@ from typing import Any
 
 import numpy as np
 import torch
-from sklearn.metrics import accuracy_score, f1_score, mean_absolute_error, mean_squared_error, r2_score, roc_auc_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, confusion_matrix, f1_score, mean_absolute_error, mean_squared_error, r2_score, roc_auc_score
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 
 from rps_gtok_consumption.data import SequenceVocab, TokenExample, TokenizedGraphDataset, TOKEN_FEATURE_KEYS, collate_tokenized_graphs
 from rps_gtok_consumption.model import build_model, parameter_counts
@@ -32,6 +32,11 @@ class TrainConfig:
     task_type: str = "classification"
     model: dict[str, Any] | None = None
     device: str = "auto"
+    class_weight: bool = False
+    # Optional union vocabulary used by matched-view experiments.  When set,
+    # every method receives the same token embedding table size and unknown
+    # symbols map to <unk>; this removes vocabulary-size parameter confounding.
+    vocab_sequences: list[list[str]] | None = None
 
 
 @dataclass
@@ -44,6 +49,11 @@ class EvaluationResult:
     mae: float | None = None
     rmse: float | None = None
     r2: float | None = None
+    balanced_accuracy: float | None = None
+    majority_accuracy: float | None = None
+    prediction_unique: int | None = None
+    prediction_histogram: dict[str, int] | None = None
+    confusion_matrix: list[list[int]] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {k: v for k, v in asdict(self).items() if v is not None}
@@ -60,18 +70,33 @@ def train_model(
     train_rows = splits["train"]
     val_rows = splits.get("val") or splits["train"]
     test_rows = splits.get("test") or val_rows
-    vocab = SequenceVocab([ex.tokens for ex in train_rows], max_size=config.vocab_size)
+    vocab = SequenceVocab(
+        config.vocab_sequences if config.vocab_sequences is not None else [ex.tokens for ex in train_rows],
+        max_size=config.vocab_size,
+    )
     num_outputs = infer_num_outputs(train_rows, task_type)
     target_mean, target_std = regression_stats(train_rows) if task_type == "regression" else (0.0, 1.0)
     train_ds = TokenizedGraphDataset(train_rows, vocab, config.max_len, task_type, target_mean, target_std)
     val_ds = TokenizedGraphDataset(val_rows, vocab, config.max_len, task_type, target_mean, target_std)
     test_ds = TokenizedGraphDataset(test_rows, vocab, config.max_len, task_type, target_mean, target_std)
     loader_args = {"batch_size": int(config.batch_size), "collate_fn": collate_tokenized_graphs}
-    train_loader = DataLoader(train_ds, shuffle=True, **loader_args)
+    if config.class_weight and task_type == "classification":
+        labels = np.asarray([int(ex.y) for ex in train_rows], dtype=int)
+        counts = np.bincount(labels, minlength=max(1, num_outputs))
+        sample_weights = torch.as_tensor(
+            [1.0 / max(1, int(counts[label])) for label in labels], dtype=torch.double
+        )
+        sampler = WeightedRandomSampler(sample_weights, num_samples=len(sample_weights), replacement=True)
+        train_loader = DataLoader(train_ds, sampler=sampler, **loader_args)
+    else:
+        train_loader = DataLoader(train_ds, shuffle=True, **loader_args)
     val_loader = DataLoader(val_ds, shuffle=False, **loader_args)
     test_loader = DataLoader(test_ds, shuffle=False, **loader_args)
-    model = build_model(len(vocab), num_outputs, config.max_len, config.model or {}).to(device)
-    criterion = loss_fn(task_type)
+    model_config = dict(config.model or {})
+    if bool(model_config.get("pair_aware", False)):
+        model_config["pair_b_id"] = int(vocab.stoi.get("PAIR_B", -1))
+    model = build_model(len(vocab), num_outputs, config.max_len, model_config).to(device)
+    criterion = loss_fn(task_type, train_rows if config.class_weight else None).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=float(config.lr), weight_decay=float(config.weight_decay))
     best_state = None
     best_score = -float("inf")
@@ -114,6 +139,8 @@ def train_model(
         "elapsed_sec": time.time() - start,
         "vocab_size": len(vocab),
         "num_outputs": num_outputs,
+        "sequence_audit": sequence_audit(splits, config.max_len),
+        "label_audit": label_audit(splits, task_type),
         "val": val_result.to_dict(),
         "test": test_result.to_dict(),
         **parameter_counts(model),
@@ -128,6 +155,45 @@ def train_model(
     return result
 
 
+def sequence_audit(
+    splits: dict[str, list[TokenExample]],
+    max_len: int,
+) -> dict[str, dict[str, float]]:
+    out: dict[str, dict[str, float]] = {}
+    for split, rows in splits.items():
+        lengths = [len(row.tokens) + 2 for row in rows]
+        total = max(1, len(lengths))
+        discarded = [max(0, length - int(max_len)) for length in lengths]
+        out[split] = {
+            "graphs": float(len(lengths)),
+            "mean_original_length": float(np.mean(lengths)) if lengths else 0.0,
+            "p95_original_length": float(np.percentile(lengths, 95)) if lengths else 0.0,
+            "max_original_length": float(max(lengths)) if lengths else 0.0,
+            "truncation_rate": float(sum(x > int(max_len) for x in lengths) / total),
+            "discarded_token_fraction": float(sum(discarded) / max(1, sum(lengths))),
+        }
+    return out
+
+
+def label_audit(
+    splits: dict[str, list[TokenExample]],
+    task_type: str,
+) -> dict[str, dict[str, Any]]:
+    if task_type != "classification":
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for split, rows in splits.items():
+        labels = [int(row.y) for row in rows]
+        counts = np.bincount(labels) if labels else np.asarray([], dtype=int)
+        out[split] = {
+            "graphs": len(labels),
+            "num_classes": int(len(counts)),
+            "histogram": {str(i): int(v) for i, v in enumerate(counts)},
+            "majority_fraction": float(max(counts) / max(1, len(labels))) if len(counts) else 0.0,
+        }
+    return out
+
+
 @torch.no_grad()
 def evaluate(
     model: nn.Module,
@@ -139,7 +205,7 @@ def evaluate(
     target_std: float = 1.0,
 ) -> EvaluationResult:
     model.eval()
-    criterion = loss_fn(task_type)
+    criterion = loss_fn(task_type).to(device)
     losses: list[float] = []
     y_true: list[Any] = []
     y_score: list[Any] = []
@@ -172,11 +238,18 @@ def evaluate(
         return EvaluationResult(split, mean_loss, roc_auc=roc)
     pred_labels = np.asarray(y_score, dtype=float).argmax(axis=1) if y_score else np.asarray([], dtype=int)
     truth = np.asarray(y_true, dtype=int)
+    majority = int(np.bincount(truth).argmax()) if len(truth) else 0
+    unique, counts = np.unique(pred_labels, return_counts=True) if len(pred_labels) else ([], [])
     return EvaluationResult(
         split,
         mean_loss,
         accuracy=accuracy_score(truth, pred_labels) if len(truth) else 0.0,
         macro_f1=f1_score(truth, pred_labels, average="macro", zero_division=0) if len(truth) else 0.0,
+        balanced_accuracy=balanced_accuracy_score(truth, pred_labels) if len(truth) and len(np.unique(truth)) > 1 else 0.0,
+        majority_accuracy=accuracy_score(truth, np.full_like(truth, majority)) if len(truth) else 0.0,
+        prediction_unique=int(len(unique)),
+        prediction_histogram={str(int(k)): int(v) for k, v in zip(unique, counts)},
+        confusion_matrix=confusion_matrix(truth, pred_labels).tolist() if len(truth) else [],
     )
 
 
@@ -193,11 +266,19 @@ def compute_loss(logits: torch.Tensor, target: torch.Tensor, criterion: nn.Modul
     return criterion(logits, target.long())
 
 
-def loss_fn(task_type: str) -> nn.Module:
+def loss_fn(task_type: str, rows: list[TokenExample] | None = None) -> nn.Module:
     if task_type == "regression":
         return nn.MSELoss()
     if task_type == "multilabel":
         return nn.BCEWithLogitsLoss()
+    if rows:
+        labels = np.asarray([int(ex.y) for ex in rows], dtype=int)
+        counts = np.bincount(labels)
+        weights = np.asarray(
+            [len(labels) / max(1, len(counts) * int(count)) for count in counts],
+            dtype=np.float32,
+        )
+        return nn.CrossEntropyLoss(weight=torch.tensor(weights))
     return nn.CrossEntropyLoss()
 
 
@@ -219,7 +300,13 @@ def selection_score(result: EvaluationResult, task_type: str) -> float:
         return -float(result.mae if result.mae is not None else result.loss)
     if task_type == "multilabel":
         return float(result.roc_auc if result.roc_auc is not None else -result.loss)
-    return float(result.macro_f1 if result.macro_f1 is not None else -result.loss)
+    score = float(result.macro_f1 if result.macro_f1 is not None else -result.loss)
+    # A validation checkpoint that predicts one class is not a valid selected
+    # representation for a multi-class task.  Keep it available in the audit,
+    # but make the deterministic selector prefer a non-collapsed checkpoint.
+    if result.prediction_unique is not None and result.prediction_unique < 2:
+        score -= 1.0
+    return score
 
 
 def safe_multilabel_roc_auc(truth: np.ndarray, score: np.ndarray) -> float:

@@ -1,0 +1,158 @@
+{
+  "sources": {
+    "enzymes": "ENZYMES_graph_labels.txt",
+    "proteins": "PROTEINS_graph_labels.txt",
+    "mutag": "MUTAG_graph_labels.txt",
+    "imdb_binary": "IMDB-BINARY_graph_labels.txt",
+    "collab": "COLLAB_graph_labels.txt"
+  },
+  "rows": [
+    {
+      "dataset": "ast_cfg_cpg",
+      "records": 8,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "cifar10_sp",
+      "records": 60,
+      "source": "GNNBenchmarkDataset/CIFAR10/train",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "citeseer",
+      "records": 60,
+      "source": "Planetoid/Citeseer/seed_node_label",
+      "matched": 34,
+      "status": "partial_shape_match"
+    },
+    {
+      "dataset": "collab",
+      "records": 60,
+      "source": "COLLAB_graph_labels.txt",
+      "matched": 40,
+      "status": "partial_topology_match"
+    },
+    {
+      "dataset": "cora",
+      "records": 60,
+      "source": "Planetoid/Cora/seed_node_label",
+      "matched": 37,
+      "status": "partial_shape_match"
+    },
+    {
+      "dataset": "enzymes",
+      "records": 60,
+      "source": "ENZYMES_graph_labels.txt",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "fb15k_237",
+      "records": 60,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "ieee_power_grid",
+      "records": 3,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "imdb_binary",
+      "records": 60,
+      "source": "IMDB-BINARY_graph_labels.txt",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "mnist_sp",
+      "records": 60,
+      "source": "GNNBenchmarkDataset/MNIST/train",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "mutag",
+      "records": 60,
+      "source": "MUTAG_graph_labels.txt",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "ogbg_code2",
+      "records": 8,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "ogbg_molhiv",
+      "records": 60,
+      "source": "OGB/ogbg_molhiv/graph-label.csv.gz",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "ogbg_molpcba",
+      "records": 60,
+      "source": "OGB/ogbg_molpcba/graph-label.csv.gz",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "ogbg_ppa",
+      "records": 8,
+      "source": "OGB/ogbg_ppa/graph-label.csv.gz",
+      "matched": 8,
+      "status": "recovered"
+    },
+    {
+      "dataset": "ogbn_arxiv",
+      "records": 60,
+      "source": "OGB/ogbn-arxiv/seed_node_label",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "proteins",
+      "records": 57,
+      "source": "PROTEINS_graph_labels.txt",
+      "matched": 57,
+      "status": "recovered"
+    },
+    {
+      "dataset": "pubmed",
+      "records": 60,
+      "source": "Planetoid/Pubmed/seed_node_label",
+      "matched": 60,
+      "status": "recovered"
+    },
+    {
+      "dataset": "road_networks",
+      "records": 8,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "synthetic_stress",
+      "records": 42,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    },
+    {
+      "dataset": "wn18rr",
+      "records": 60,
+      "source": "",
+      "matched": 0,
+      "status": "no_audited_raw_source"
+    }
+  ]
+}

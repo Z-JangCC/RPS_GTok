@@ -135,6 +135,12 @@ def compile_program(record: GraphRecord, patches: list[Patch], codebook: Prototy
     meta = {
         "num_patches": len(ordered),
         "num_codes": len(set(assignments.values())),
+        "covered_nodes": len(set(node for patch in ordered for node in patch.nodes)),
+        "covered_edges": len(set(tuple(sorted(edge)) for patch in ordered for edge in patch.edges)),
+        "source_nodes": int(record.num_nodes),
+        "source_edges": len(edge_set(record)),
+        "node_coverage": len(set(node for patch in ordered for node in patch.nodes)) / max(1, int(record.num_nodes)),
+        "edge_coverage": len(set(tuple(sorted(edge)) for patch in ordered for edge in patch.edges)) / max(1, len(edge_set(record))),
         "program_version": "gptok_opg_v1",
         "leakage_policy": "abstract_refs_only",
     }
@@ -145,6 +151,10 @@ def _canonical_frontier_order(record: GraphRecord, patches: list[Patch], assignm
     if not patches:
         return []
     edges = edge_set(record)
+    adjacency: dict[int, set[int]] = defaultdict(set)
+    for u, v in edges:
+        adjacency[u].add(v)
+        adjacency[v].add(u)
     node_sets = [set(p.nodes) for p in patches]
     edge_sets = [{tuple(sorted(e)) for e in p.edges} for p in patches]
     patch_scores = []
@@ -161,7 +171,7 @@ def _canonical_frontier_order(record: GraphRecord, patches: list[Patch], assignm
         best = min(
             remaining,
             key=lambda j: (
-                -_frontier_weight(j, node_sets, edge_sets, emitted_nodes, emitted_edges, edges),
+                -_frontier_weight(j, node_sets, edge_sets, emitted_nodes, emitted_edges, adjacency),
                 assignments[patches[j].patch_id],
                 patches[j].structural_hash,
                 -len(edge_sets[j]),
@@ -176,11 +186,11 @@ def _canonical_frontier_order(record: GraphRecord, patches: list[Patch], assignm
     return [patches[i] for i in ordered]
 
 
-def _frontier_weight(index: int, node_sets, edge_sets, emitted_nodes, emitted_edges, graph_edges) -> int:
+def _frontier_weight(index: int, node_sets, edge_sets, emitted_nodes, emitted_edges, adjacency) -> int:
     nodes = node_sets[index]
     shared_nodes = len(nodes & emitted_nodes)
     shared_edges = len(edge_sets[index] & emitted_edges)
-    cross_edges = sum(1 for u, v in graph_edges if (u in nodes and v in emitted_nodes) or (v in nodes and u in emitted_nodes))
+    cross_edges = sum(len(adjacency.get(node, set()) & emitted_nodes) for node in nodes)
     internal_gain = len(edge_sets[index] - emitted_edges)
     return 5 * shared_edges + 3 * shared_nodes + 2 * cross_edges + internal_gain
 

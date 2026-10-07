@@ -132,6 +132,45 @@ class TransformerGraphClassifier(nn.Module):
         return self.head(torch.cat(pooled, dim=-1))
 
 
+class PairTransformerGraphClassifier(nn.Module):
+    """Shared Transformer encoder with a symmetric two-sequence head.
+
+    Inputs are concatenated as ``<BOS> PAIR_A ... PAIR_B ... <EOS>``. The
+    marker IDs are supplied by the fitted vocabulary. Pooling each side before
+    forming ``[a,b,|a-b|,a*b,(a+b)/2]`` avoids the order-sensitive shortcut in
+    the original pair concatenation classifier.
+    """
+
+    def __init__(self, adapter: nn.Module, backbone: TransformerBackbone, num_outputs: int, dim: int, pair_b_id: int, dropout: float = 0.1):
+        super().__init__()
+        self.adapter = adapter
+        self.backbone = backbone
+        self.pair_b_id = int(pair_b_id)
+        self.head = nn.Sequential(
+            nn.Linear(int(dim) * 5, int(dim)),
+            nn.GELU(),
+            nn.Dropout(float(dropout)),
+            nn.Linear(int(dim), int(num_outputs)),
+        )
+
+    def forward(self, ids: torch.Tensor, **features: torch.Tensor) -> torch.Tensor:
+        pad = ids.eq(0)
+        h = self.backbone(self.adapter(ids, **features), pad)
+        valid = ~pad
+        pooled_a=[]; pooled_b=[]
+        for index in range(ids.shape[0]):
+            marker = torch.nonzero(ids[index].eq(self.pair_b_id), as_tuple=False).flatten()
+            split = int(marker[0].item()) if len(marker) else ids.shape[1] // 2
+            a_mask = valid[index].clone(); b_mask = valid[index].clone()
+            a_mask[split:] = False; b_mask[: split + 1] = False
+            a = h[index][a_mask].mean(0) if a_mask.any() else h[index].mean(0)
+            b = h[index][b_mask].mean(0) if b_mask.any() else h[index].mean(0)
+            pooled_a.append(a); pooled_b.append(b)
+        a = torch.stack(pooled_a); b = torch.stack(pooled_b)
+        pair = torch.cat([a, b, (a-b).abs(), a*b, (a+b)/2.0], dim=-1)
+        return self.head(pair)
+
+
 def build_model(vocab_size: int, num_outputs: int, max_len: int, config: dict[str, Any]) -> TransformerGraphClassifier:
     dim = int(config.get("dim", 128))
     dropout = float(config.get("dropout", 0.1))
@@ -150,6 +189,15 @@ def build_model(vocab_size: int, num_outputs: int, max_len: int, config: dict[st
         heads=int(config.get("heads", 4)),
         dropout=dropout,
     )
+    if bool(config.get("pair_aware", False)):
+        return PairTransformerGraphClassifier(
+            adapter=adapter,
+            backbone=backbone,
+            num_outputs=int(num_outputs),
+            dim=dim,
+            pair_b_id=int(config.get("pair_b_id", -1)),
+            dropout=dropout,
+        )
     return TransformerGraphClassifier(
         adapter=adapter,
         backbone=backbone,

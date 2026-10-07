@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import random
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
@@ -11,7 +12,10 @@ from typing import Iterable
 import networkx as nx
 
 from gptok2.data.schema import GraphRecord, edge_set, to_networkx
+from gptok2.data.schema_spec import SchemaSpec
+from gptok2.canonical import canonical_record
 from gptok2_tokenizer import GPTok2Tokenizer
+from gptok2_tokenizer.payload import split_token
 
 
 RPS_MODE_ALIASES = {
@@ -29,12 +33,36 @@ RPS_MODE_ALIASES = {
     "motif_hybrid": "motif_hybrid",
 }
 
+# These aliases are deliberately explicit: the ``plus`` representation is not
+# an untracked post-hoc feature injection.  It is a formal RPS view consisting
+# of the executable program followed by invariant graph anchors.  Matching
+# ``*_plus`` controls are provided below so the anchor contribution can be
+# measured separately from the tokenization contribution.
+STRUCTURAL_PLUS_VIEWS = {
+    "rps_gtok_plus": "rps_gtok_full",
+    "rps_gtok_plus_wl": "rps_gtok_full",
+    "edge_list_plus": "edge_list",
+    "canonical_edge_list_plus": "canonical_edge_list",
+}
+
 BPE_BASE_VIEWS = {
     "edge_list_bpe": "edge_list",
     "adjacency_list_bpe": "adjacency_list",
     "dfs_order_bpe": "dfs_order",
     "bfs_order_bpe": "bfs_order",
     "graph_tokenizer_feuler_bpe": "graph_tokenizer_feuler",
+    "canonical_edge_list_bpe": "canonical_edge_list",
+    "canonical_adjacency_list_bpe": "canonical_adjacency_list",
+    "canonical_dfs_order_bpe": "canonical_dfs_order",
+    "canonical_bfs_order_bpe": "canonical_bfs_order",
+}
+
+CANONICAL_BASE_VIEWS = {
+    "canonical_edge_list",
+    "canonical_adjacency_list",
+    "canonical_dfs_order",
+    "canonical_bfs_order",
+    "canonical_graph_tokenizer_feuler",
 }
 
 
@@ -79,6 +107,7 @@ class TokenViewBuilder:
         self.bpe_merges = int(bpe_merges)
         self.bpe_min_freq = int(bpe_min_freq)
         self.bpe: dict[str, TokenBPE] = {}
+        self._rps_cache: dict[tuple[str, str], list[str]] = {}
 
     def fit(self, records: list[GraphRecord], views: list[str]) -> "TokenViewBuilder":
         for view in views:
@@ -91,11 +120,46 @@ class TokenViewBuilder:
 
     def build(self, record: GraphRecord, view: str) -> list[str]:
         view = str(view)
+        if view in STRUCTURAL_PLUS_VIEWS:
+            base = self.build(record, STRUCTURAL_PLUS_VIEWS[view])
+            # ``rps_gtok_plus`` uses the same deterministic anchors as the
+            # matched edge-list controls.  The only extra information in RPS
+            # is therefore the executable primitive/motif stream itself.
+            anchors = structural_summary_tokens(record) + wl_summary_tokens(record)
+            if view in {"rps_gtok_plus", "rps_gtok_plus_wl", "edge_list_plus", "canonical_edge_list_plus"}:
+                # RPS-GTok++ invariant anchors are derived from the executable
+                # graph state rather than arbitrary node IDs.  They expose
+                # degree/component/cycle signatures that are useful to a
+                # sequence consumer while remaining permutation-stable.
+                anchors += rps_semantic_anchor_tokens(record)
+            return base + anchors
         if view in BPE_BASE_VIEWS:
             base_tokens = self.build(record, BPE_BASE_VIEWS[view])
             return self.bpe.get(view, TokenBPE()).encode(base_tokens)
         if view in RPS_MODE_ALIASES:
-            return self.tokenizer.encode(record, mode=RPS_MODE_ALIASES[view]).tokens
+            mode = RPS_MODE_ALIASES[view]
+            key = (record_fingerprint(record), mode)
+            if key not in self._rps_cache:
+                self._rps_cache[key] = self.tokenizer.encode(record, mode=mode).tokens
+            return list(self._rps_cache[key])
+        if view in {"rps_gtok_identifier", "rps_gtok_token_only"}:
+            key = (record_fingerprint(record), "motif_hybrid")
+            if key not in self._rps_cache:
+                self._rps_cache[key] = self.tokenizer.encode(record, mode="motif_hybrid").tokens
+            return [split_token_identifier(token) for token in self._rps_cache[key]]
+        if view in CANONICAL_BASE_VIEWS:
+            canonical = canonical_record(
+                record,
+                SchemaSpec.from_config(self.tokenizer.config),
+                exact=True,
+                max_search_nodes=int(
+                    self.tokenizer.config.get("canonicalization", {}).get(
+                        "max_search_nodes", 100000
+                    )
+                ),
+            )
+            base_view = view.removeprefix("canonical_")
+            return self.build(canonical, base_view)
         if view == "rps_gtok_shuffled":
             return shuffled_tokens(self.build(record, "rps_gtok_full"), record.graph_id, self.seed)
         if view in {"rps_gtok_random_ids", "random_ids_same_length"}:
@@ -202,6 +266,36 @@ def wl_summary_tokens(record: GraphRecord, rounds: int = 2) -> list[str]:
     return out
 
 
+def rps_semantic_anchor_tokens(record: GraphRecord) -> list[str]:
+    """Permutation-invariant graph-state anchors for the RPS-GTok++ variant."""
+    graph = to_networkx(record)
+    degree_counts = Counter(int(degree) for _, degree in graph.degree())
+    out = [f"RPS_DEGREE_{degree}_{count}" for degree, count in sorted(degree_counts.items())]
+    component_graph = nx.Graph(graph)
+    components = sorted((len(component) for component in nx.connected_components(component_graph)), reverse=True)
+    out.extend(f"RPS_COMPONENT_SIZE_{size}" for size in components[:32])
+    if not graph.is_directed():
+        cycle_basis = nx.cycle_basis(nx.Graph(graph))
+        out.append(f"RPS_CYCLE_COUNT_{min(32, len(cycle_basis))}")
+        # The length of a cycle-basis member is not invariant to traversal
+        # order. Use the cyclomatic number instead; it is permutation invariant
+        # and retains the same coarse cyclicity signal without a basis-order
+        # artifact.
+        simple_graph = nx.Graph(graph)
+        cyclomatic = simple_graph.number_of_edges() - simple_graph.number_of_nodes() + nx.number_connected_components(simple_graph)
+        out.append(f"RPS_CYCLE_RANK_{min(64, max(0, cyclomatic))}")
+    # Counts of local degree-neighborhood signatures are more stable than raw
+    # node identifiers and complement the executable primitive stream.
+    nodes = sorted(graph.nodes())
+    labels = {node: str(graph.degree(node)) for node in nodes}
+    for depth in range(4):
+        signatures = [stable_hash([labels[node], *sorted(labels[nbr] for nbr in graph.neighbors(node))]) for node in nodes]
+        counts = Counter(signatures)
+        out.extend(f"RPS_WL{depth}_{digest}_{count}" for digest, count in sorted(counts.items()))
+        labels = {node: signatures[index] for index, node in enumerate(nodes)}
+    return out
+
+
 def shuffled_tokens(tokens: list[str], graph_id: str, seed: int) -> list[str]:
     out = list(tokens)
     random.Random(stable_int(f"shuffle:{seed}:{graph_id}")).shuffle(out)
@@ -239,3 +333,29 @@ def _apply_pair(sequence: list[str], pair: tuple[str, str], merged: str) -> list
             out.append(sequence[idx])
             idx += 1
     return out
+
+
+def split_token_identifier(token: str) -> str:
+    return split_token(token).identifier
+
+
+def record_fingerprint(record: GraphRecord) -> str:
+    """Content fingerprint for safe token caching under node permutations.
+
+    Graph IDs identify logical examples, not immutable serialized inputs. A
+    permuted record may intentionally retain the same graph_id, so cache keys
+    must include all structural/schema fields used by encoding.
+    """
+    def tensor(value):
+        return value.detach().cpu().tolist() if value is not None else None
+    payload = {
+        "graph_id": str(record.graph_id),
+        "num_nodes": int(record.num_nodes),
+        "edges": tensor(record.edge_index),
+        "node_type": tensor(record.node_type),
+        "edge_type": tensor(record.edge_type),
+        "node_attr": tensor(record.node_attr),
+        "edge_attr": tensor(record.edge_attr),
+        "directed": bool(record.directed),
+    }
+    return hashlib.sha1(json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()

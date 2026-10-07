@@ -1,0 +1,10 @@
+dataset,parameters,prediction_unique,run,seed,test_accuracy,test_balanced_accuracy,test_discarded_fraction,test_macro_f1,test_truncation_rate,view
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2026,0.55,0.5,0.0,0.48717948717948717,0.0,edge_list
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2027,0.65,0.7083333333333334,0.0,0.6419437340153453,0.0,edge_list
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2028,0.7,0.6875,0.0,0.6875,0.0,edge_list
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2026,0.5,0.5416666666666666,0.0,0.4949494949494949,0.0,canonical_edge_list
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2027,0.75,0.7083333333333333,0.0,0.7150997150997151,0.0,canonical_edge_list
+IMDB-BINARY,176738,2,IMDB_corrected_no_truncation_v3,2028,0.6,0.5416666666666667,0.0,0.5238095238095238,0.0,canonical_edge_list
+IMDB-BINARY,180002,2,IMDB_corrected_no_truncation_v3,2026,0.7,0.6875,0.0,0.6875,0.0,rps_gtok_plus
+IMDB-BINARY,180002,2,IMDB_corrected_no_truncation_v3,2027,0.35,0.3958333333333333,0.0,0.3350383631713555,0.0,rps_gtok_plus
+IMDB-BINARY,180002,2,IMDB_corrected_no_truncation_v3,2028,0.5,0.5208333333333334,0.0,0.5,0.0,rps_gtok_plus

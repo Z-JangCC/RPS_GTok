@@ -22,6 +22,7 @@ GENERATED_ROOTS = {
     "logs",
     "runs",
     "tmp",
+    "rebuttal",
     TRACKING_DIR,
 }
 EXPECTED_MODES = {"original", "compact", "entropy", "motif_macro", "motif_entropy", "motif_hybrid"}

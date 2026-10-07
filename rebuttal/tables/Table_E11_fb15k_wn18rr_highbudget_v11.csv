@@ -1,0 +1,3 @@
+dataset,graphs,ok,equal,timeout,error,directed,directed_input,certified_equal_rate,wall_sec,timeout_sec,workers,certificate
+fb15k_237,60,60,60,0,0,0,60,1.0,95.16387697681785,300.0,8,pynauty_attributed_incidence_graph_v2
+wn18rr,60,60,60,0,0,0,60,1.0,18.178543427959085,300.0,8,pynauty_attributed_incidence_graph_v2

@@ -1,0 +1,40 @@
+{
+  "aggregate": "rebuttal/tables/Table_E16_constructed_topology_proxy_notrunc_aggregate.csv",
+  "datasets": [
+    "ast_cfg_cpg",
+    "cifar10_sp",
+    "citeseer",
+    "collab",
+    "cora",
+    "enzymes",
+    "fb15k_237",
+    "ieee_power_grid",
+    "imdb_binary",
+    "mnist_sp",
+    "mutag",
+    "ogbg_code2",
+    "ogbg_molhiv",
+    "ogbg_molpcba",
+    "ogbg_ppa",
+    "ogbn_arxiv",
+    "proteins",
+    "pubmed",
+    "road_networks",
+    "synthetic_stress",
+    "wn18rr"
+  ],
+  "input_graph_records_y": "null",
+  "max_truncation_bound": 0.0,
+  "seeds": [
+    2026,
+    2027,
+    2028
+  ],
+  "source": "constructed_tasks/*.jsonl",
+  "test_used_for_selection": false,
+  "views": [
+    "canonical_edge_list",
+    "edge_list",
+    "rps_gtok_plus"
+  ]
+}

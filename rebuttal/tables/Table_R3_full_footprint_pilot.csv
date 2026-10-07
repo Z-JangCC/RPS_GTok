@@ -1,0 +1,11 @@
+complete_bytes,id_bytes,id_tokens,method,payload_bytes,stability
+729.097,100.174,11.750,adjacency_list,23.500,0.000
+703.236,15.750,11.750,bfs_order,105.743,0.000
+729.667,100.458,11.750,canonical_adjacency_list,23.500,1.000
+703.833,15.750,11.750,canonical_bfs_order,106.042,1.000
+703.333,15.750,11.750,canonical_dfs_order,105.792,1.000
+699.792,11.708,11.708,canonical_edge_list,109.875,1.000
+703.347,15.750,11.750,dfs_order,105.799,0.000
+699.222,11.708,11.708,edge_list,109.590,0.000
+1546.910,69.417,4.833,rps_gtok_full,1139.285,1.000
+1546.979,69.417,4.833,rps_gtok_identifier,1139.354,1.000
