@@ -178,7 +178,7 @@ compilation, frozen vocabulary fragment matching, payload construction,
 precondition checking and primitive fallback are coupled so that vocabulary
 compression cannot discard uncovered graph content. The relevant implementation
 modules are `gptok2/canonical.py`, `gptok2/program/`,
-`gptok2_tokenizer_component/gptok2_tokenizer/payload.py` and
+`gptok2_tokenizer/payload.py` and
 `rps_gtok_consumption/views.py`.
 
 ### Reconstruction and downstream relation
